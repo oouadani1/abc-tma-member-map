@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ABC TMA Member Map</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+  :root { --ink:#1b2430; --muted:#6b7684; --line:#e3e7ec; --card:#ffffffee; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; font:13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); }
+  #map { position:absolute; inset:0; }
+  #panel { position:absolute; top:12px; left:12px; bottom:12px; width:300px; overflow:auto; background:var(--card); backdrop-filter: blur(6px);
+           border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 24px rgba(20,30,50,.12); padding:14px 14px 10px; z-index:2; }
+  h1 { font-size:16px; margin:0 0 2px; letter-spacing:-.01em; }
+  .sub { color:var(--muted); font-size:12px; margin-bottom:10px; }
+  h2 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 6px; font-weight:600; }
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .stat { border:1px solid var(--line); border-radius:8px; padding:6px 8px; background:#fff; }
+  .stat b { display:block; font-size:17px; letter-spacing:-.01em; }
+  .stat span { color:var(--muted); font-size:11px; }
+  label.row { display:flex; align-items:center; gap:8px; padding:3px 0; cursor:pointer; }
+  label.row input { margin:0; }
+  .sw { width:11px; height:11px; border-radius:50%; flex:none; border:1.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.15); }
+  .sw.sq { border-radius:2px; }
+  .sw.ln { width:16px; height:3px; border-radius:2px; box-shadow:none; border:0; }
+  .grow { flex:1; }
+  .num { color:var(--muted); font-variant-numeric:tabular-nums; font-size:12px; }
+  select, input[type=password] { font:inherit; padding:4px 6px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); }
+  button { font:inherit; padding:4px 10px; border:1px solid var(--line); border-radius:6px; background:#f4f6f8; color:var(--ink); cursor:pointer; }
+  button:hover { background:#eaeef2; }
+  .ctl { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:3px 0; }
+  .note { color:var(--muted); font-size:11px; margin-top:12px; border-top:1px solid var(--line); padding-top:8px; }
+  details.dues { margin-top:14px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  details.dues > summary { cursor:pointer; padding:7px 10px; font-weight:600; font-size:12px; list-style:none; display:flex; justify-content:space-between; }
+  details.dues > summary::after { content:"+"; color:var(--muted); }
+  details.dues[open] > summary::after { content:"–"; }
+  details.dues > summary::-webkit-details-marker { display:none; }
+  .dues-body { padding:2px 10px 10px; }
+  .dues-body input[type=password] { flex:1; min-width:0; }
+  .msg { font-size:11px; color:#b42318; min-height:15px; margin-top:4px; }
+  .msg.ok { color:#067647; }
+  .maplibregl-popup-content { font:13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding:10px 12px; border-radius:10px; min-width:210px; }
+  .pop h3 { margin:0 0 2px; font-size:14px; }
+  .pop .addr { color:var(--muted); margin-bottom:6px; }
+  .pop table { border-collapse:collapse; width:100%; }
+  .pop td { padding:1px 0; vertical-align:top; }
+  .pop td:first-child { color:var(--muted); padding-right:10px; white-space:nowrap; }
+  .badge { display:inline-block; padding:0 7px; border-radius:9px; color:#fff; font-size:11px; font-weight:600; }
+  @media (max-width: 640px) { #panel { width:auto; right:12px; bottom:auto; max-height:46%; } }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+  <h1>ABC TMA Member Map</h1>
+  <div class="sub">Member properties &middot; snapshot <span id="snap"></span></div>
+
+  <div class="stats">
+    <div class="stat"><b id="s-count">–</b><span>properties shown</span></div>
+    <div class="stat"><b id="s-sqft">–</b><span>sq ft on file</span></div>
+    <div class="stat"><b id="s-rapid">…</b><span>within 800 m of rapid transit</span></div>
+    <div class="stat"><b id="s-bike">…</b><span>within 400 m of a Bluebikes station</span></div>
+  </div>
+
+  <h2>Members</h2>
+  <div class="ctl"><span>Color by</span>
+    <select id="colorBy"><option value="sector">Sector</option><option value="tma">TMA</option></select></div>
+  <div class="ctl"><span>Size by</span>
+    <select id="sizeBy"><option value="fixed">Fixed</option><option value="sqft">Square footage</option></select></div>
+  <div class="ctl"><label class="row" style="padding:0"><input type="checkbox" id="rings"> Walkshed rings</label>
+    <select id="ringR"><option value="400">400 m</option><option value="800" selected>800 m</option><option value="1600">1,600 m</option></select></div>
+  <div id="color-legend"></div>
+
+  <h2>Context layers</h2>
+  <label class="row"><input type="checkbox" data-layer="mbta-lines" checked><span class="sw ln" style="background:linear-gradient(90deg,#DA291C 25%,#ED8B00 25% 50%,#00843D 50% 75%,#003DA5 75%)"></span><span class="grow">MBTA rapid transit lines</span></label>
+  <label class="row"><input type="checkbox" data-layer="rapid" checked><span class="sw" style="background:#fff;box-shadow:0 0 0 2px #444"></span><span class="grow">Rapid transit stations</span><span class="num" id="n-rapid"></span></label>
+  <label class="row"><input type="checkbox" data-layer="cr" checked><span class="sw" style="background:#80276C"></span><span class="grow">Commuter rail stations</span><span class="num" id="n-cr"></span></label>
+  <label class="row"><input type="checkbox" data-layer="bike" checked><span class="sw sq" style="background:#2b8cbe"></span><span class="grow">Bluebikes stations</span><span class="num" id="n-bike"></span></label>
+
+  <h2>Basemap</h2>
+  <div class="ctl"><span>Style</span><select id="basemap"><option value="light">Light</option><option value="dark">Dark</option></select></div>
+
+  <details class="dues" id="dues" hidden>
+    <summary>Dues (restricted)</summary>
+    <div class="dues-body">
+      <div id="dues-locked">
+        <div class="ctl" style="gap:6px"><input type="password" id="dues-pw" placeholder="Password" autocomplete="off"><button id="dues-btn" type="button">Unlock</button></div>
+        <div class="msg" id="dues-msg"></div>
+      </div>
+      <div id="dues-open" hidden>
+        <div class="stats" style="margin:4px 0 6px">
+          <div class="stat"><b id="d-total">–</b><span>2027 dues shown</span></div>
+          <div class="stat"><b id="d-count">–</b><span>properties shown</span></div>
+        </div>
+        <div id="status-list"></div>
+        <div class="msg ok">Unlocked. Color/size by dues are now in the Members controls.</div>
+      </div>
+    </div>
+  </details>
+
+  <div class="note">Stations: MassGIS/MBTA via the MA bikeshare coverage project. Routes: MBTA V3 API. Bikeshare: Bluebikes GBFS (live). Click a property for details.</div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="data/members.js"></script>
+<script src="data/dues.enc.js" onerror="void 0"></script>
+<script>
+/* CONFIG: every external layer is one entry here. Add GTFS, congestion, etc. the same way. */
+const CONFIG = {
+  basemaps: {
+    light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+    dark:  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+  },
+  sources: {
+    rapidStations: "https://raw.githubusercontent.com/oouadani1/ma-bikeshare-coverage/main/data/processed/mbta_rapid_transit_stations.geojson",
+    commuterRail:  "https://raw.githubusercontent.com/oouadani1/ma-bikeshare-coverage/main/data/processed/mbta_commuter_rail_stations.geojson",
+    bluebikes:     "https://gbfs.bluebikes.com/gbfs/en/station_information.json",
+    mbtaShapes:    "https://api-v3.mbta.com/shapes?filter[route]="
+  },
+  routes: { "Red":"#DA291C", "Mattapan":"#DA291C", "Orange":"#ED8B00", "Blue":"#003DA5",
+            "Green-B":"#00843D", "Green-C":"#00843D", "Green-D":"#00843D", "Green-E":"#00843D" },
+  center: [-71.08, 42.35], zoom: 11.3
+};
+
+const STATUS_COLORS = { "Not Billed":"#98a2b3", "Billed":"#2f80ed", "Processing":"#f2994a", "Bounce Back":"#e5484d",
+                        "Partial":"#e5c100", "Paid":"#2ba84a", "Waived":"#b08fd6", "No Response":"#6b7280", "Lost":"#7f1d1d" };
+const TMA_COLORS = { "A Better City TMA":"#2e7d32", "Allston-Brighton TMA":"#e67e22", "Longwood TMA":"#2f80ed", "Lower Mystic TMA":"#d63384", "Unverified":"#98a2b3" };
+const SECTOR_COLORS = { "Commercial Real Estate":"#2f80ed", "Employer":"#16a3a3", "Residential":"#b5651d", "Mixed-Use":"#7c4dff", "Other":"#98a2b3" };
+
+/* helpers */
+const fmt$ = n => "$" + Math.round(n).toLocaleString();
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+const getJSON = u => fetch(u).then(r => { if (!r.ok) throw new Error(r.status + " " + u); return r.json(); });
+const $ = id => document.getElementById(id);
+
+function haversine(a, b) { // meters; a, b are [lng, lat]
+  const R = 6371008.8, rad = Math.PI / 180;
+  const dLat = (b[1]-a[1])*rad, dLng = (b[0]-a[0])*rad;
+  const h = Math.sin(dLat/2)**2 + Math.cos(a[1]*rad)*Math.cos(b[1]*rad)*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function decodePolyline(str) { // Google polyline, precision 5, returns lng/lat pairs
+  let i = 0, lat = 0, lng = 0; const out = [];
+  while (i < str.length) {
+    let b, shift = 0, res = 0;
+    do { b = str.charCodeAt(i++) - 63; res |= (b & 31) << shift; shift += 5; } while (b >= 32);
+    lat += (res & 1) ? ~(res >> 1) : (res >> 1);
+    shift = 0; res = 0;
+    do { b = str.charCodeAt(i++) - 63; res |= (b & 31) << shift; shift += 5; } while (b >= 32);
+    lng += (res & 1) ? ~(res >> 1) : (res >> 1);
+    out.push([lng/1e5, lat/1e5]);
+  }
+  return out;
+}
+function circlePolygon(center, radiusM, steps = 48) {
+  const lng = center[0], lat = center[1], rad = Math.PI/180, dLat = radiusM/111320, dLng = radiusM/(111320*Math.cos(lat*rad));
+  const ring = [];
+  for (let i = 0; i <= steps; i++) { const t = (i/steps)*2*Math.PI; ring.push([lng + dLng*Math.cos(t), lat + dLat*Math.sin(t)]); }
+  return ring;
+}
+
+/* dues are stored encrypted (AES-256-GCM, key from the password via PBKDF2). Nothing about dues is readable without it. */
+async function decryptDues(enc, password) {
+  if (!window.crypto || !crypto.subtle) throw new Error("NOCRYPTO");
+  const b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const keyMaterial = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({ name:"PBKDF2", salt:b(enc.salt), iterations:enc.iter, hash:"SHA-256" },
+                                            keyMaterial, { name:"AES-GCM", length:256 }, false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name:"AES-GCM", iv:b(enc.iv) }, key, b(enc.ct));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+function mergeDues(fc, dues) {
+  fc.features.forEach(f => {
+    const d = dues[f.properties.org_id];
+    f.properties.status = d ? d.status : null;
+    f.properties.billed = d ? d.billed : null;
+  });
+}
+
+/* data */
+const members = window.MEMBERS;
+const data = { rapid: {type:"FeatureCollection", features:[]}, cr: {type:"FeatureCollection", features:[]},
+               bike: {type:"FeatureCollection", features:[]}, lines: {type:"FeatureCollection", features:[]} };
+const nearest = {};
+const state = { unlocked:false, statuses:new Set(), colorBy:"sector", sizeBy:"fixed",
+                rings:false, ringR:800, layers:{ "mbta-lines":true, rapid:true, cr:true, bike:true }, basemap:"light" };
+
+$("snap").textContent = window.MEMBERS_SNAPSHOT || "";
+if (window.DUES_ENC) $("dues").hidden = false;
+
+/* map */
+const map = new maplibregl.Map({ container:"map", style: CONFIG.basemaps.light, center: CONFIG.center, zoom: CONFIG.zoom, attributionControl:{compact:true} });
+map.addControl(new maplibregl.NavigationControl({ showCompass:false }), "top-right");
+map.addControl(new maplibregl.ScaleControl({ unit:"imperial" }), "bottom-right");
+
+function colorExpr() {
+  const prop = state.colorBy, table = { status:STATUS_COLORS, tma:TMA_COLORS, sector:SECTOR_COLORS }[prop];
+  const expr = ["match", ["get", prop]];
+  Object.entries(table).forEach(([k, v]) => expr.push(k, v));
+  expr.push("#98a2b3");
+  return expr;
+}
+function radiusExpr() {
+  if (state.sizeBy === "sqft")   return ["interpolate", ["linear"], ["sqrt", ["coalesce", ["get","sqft"], 0]], 0, 5, 500, 8, 1000, 12, 1700, 19];
+  if (state.sizeBy === "billed") return ["interpolate", ["linear"], ["coalesce", ["get","billed"], 0], 0, 5, 3850, 8, 8750, 12, 14750, 18];
+  return 8;
+}
+function activeFilter() { // null (no filter) until dues are unlocked and a status is switched off
+  if (!state.unlocked) return null;
+  const all = new Set(members.features.map(f => f.properties.status));
+  if ([...all].every(s => state.statuses.has(s))) return null;
+  return ["in", ["get","status"], ["literal", [...state.statuses]]];
+}
+function shownFeatures() {
+  return state.unlocked ? members.features.filter(f => state.statuses.has(f.properties.status)) : members.features;
+}
+function ringsData() {
+  return { type:"FeatureCollection", features: members.features.map(f => ({
+    type:"Feature", properties:{ org_id:f.properties.org_id, status:f.properties.status || null },
+    geometry:{ type:"Polygon", coordinates:[circlePolygon(f.geometry.coordinates, state.ringR)] } })) };
+}
+
+function addAllLayers() {
+  const vis = k => state.layers[k] ? "visible" : "none";
+  map.addSource("rings",   { type:"geojson", data: ringsData() });
+  map.addSource("lines",   { type:"geojson", data: data.lines });
+  map.addSource("cr",      { type:"geojson", data: data.cr });
+  map.addSource("rapid",   { type:"geojson", data: data.rapid });
+  map.addSource("bike",    { type:"geojson", data: data.bike });
+  map.addSource("members", { type:"geojson", data: members });
+
+  map.addLayer({ id:"rings-fill", type:"fill", source:"rings",
+    layout:{ visibility: state.rings ? "visible":"none" }, paint:{ "fill-color":"#2f80ed", "fill-opacity":0.07 } });
+  map.addLayer({ id:"rings-line", type:"line", source:"rings",
+    layout:{ visibility: state.rings ? "visible":"none" }, paint:{ "line-color":"#2f80ed", "line-opacity":0.35, "line-width":1 } });
+  map.addLayer({ id:"mbta-lines", type:"line", source:"lines", layout:{ visibility:vis("mbta-lines"), "line-cap":"round", "line-join":"round" },
+    paint:{ "line-color":["get","color"], "line-width":["interpolate",["linear"],["zoom"],9,1.5,14,4], "line-opacity":0.9 } });
+  map.addLayer({ id:"cr", type:"circle", source:"cr", layout:{ visibility:vis("cr") },
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2,14,5], "circle-color":"#80276C", "circle-stroke-color":"#fff", "circle-stroke-width":1 } });
+  map.addLayer({ id:"rapid", type:"circle", source:"rapid", layout:{ visibility:vis("rapid") },
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2,14,5.5], "circle-color":"#fff", "circle-stroke-color":"#333", "circle-stroke-width":1.5 } });
+  map.addLayer({ id:"bike", type:"circle", source:"bike", layout:{ visibility:vis("bike") },
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,1.5,14,4], "circle-color":"#2b8cbe", "circle-opacity":0.85, "circle-stroke-color":"#fff", "circle-stroke-width":0.8 } });
+  map.addLayer({ id:"members", type:"circle", source:"members",
+    paint:{ "circle-radius":radiusExpr(), "circle-color":colorExpr(), "circle-opacity":0.92, "circle-stroke-color":"#fff", "circle-stroke-width":1.5 } });
+  map.addLayer({ id:"members-label", type:"symbol", source:"members", minzoom:13.2,
+    layout:{ "text-field":["get","name"], "text-font":["Noto Sans Regular"], "text-size":11, "text-offset":[0,1.3], "text-anchor":"top", "text-optional":true },
+    paint:{ "text-color": state.basemap === "dark" ? "#e8edf3" : "#1b2430", "text-halo-color": state.basemap === "dark" ? "#111" : "#fff", "text-halo-width":1.2 } });
+  applyFilter();
+}
+map.on("style.load", addAllLayers); /* re-adds custom layers whenever the basemap style loads */
+
+/* popups */
+const popup = new maplibregl.Popup({ closeButton:true, maxWidth:"300px" });
+map.on("click", "members", e => {
+  const p = e.features[0].properties, n = nearest[p.org_id] || {};
+  const rows = [];
+  if (state.unlocked && p.status && p.status !== "null") {
+    rows.push(["Status", `<span class="badge" style="background:${STATUS_COLORS[p.status] || "#98a2b3"}">${esc(p.status)}</span>`]);
+    rows.push(["2027 dues", p.billed && p.billed !== "null" ? fmt$(p.billed) : "–"]);
+  }
+  rows.push(["Sector", esc(p.sector)], ["TMA", esc(p.tma)]);
+  rows.push(["Sq ft", p.sqft && p.sqft !== "null" ? Number(p.sqft).toLocaleString() + (p.sqft_tier && p.sqft_tier !== "null" ? ` <span style="color:#6b7684">(${esc(p.sqft_tier)})</span>` : "") : "–"]);
+  rows.push(["Nearest rapid transit", n.rapid ? `${esc(n.rapid.name)} &middot; ${Math.round(n.rapid.m)} m` : "…"]);
+  rows.push(["Nearest Bluebikes", n.bike ? `${esc(n.bike.name)} &middot; ${Math.round(n.bike.m)} m` : "…"]);
+  popup.setLngLat(e.features[0].geometry.coordinates)
+       .setHTML(`<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">${esc(p.address)}, ${esc(p.city)}</div><table>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table></div>`)
+       .addTo(map);
+});
+map.on("mouseenter", "members", () => map.getCanvas().style.cursor = "pointer");
+map.on("mouseleave", "members", () => map.getCanvas().style.cursor = "");
+
+/* sidebar */
+function updateStats() {
+  const shown = shownFeatures();
+  $("s-count").textContent = shown.length + " / " + members.features.length;
+  const sq = shown.reduce((a, f) => a + (f.properties.sqft || 0), 0);
+  $("s-sqft").textContent = (sq / 1e6).toFixed(1) + "M";
+  if (state.unlocked) {
+    $("d-total").textContent = fmt$(shown.reduce((a, f) => a + (f.properties.billed || 0), 0));
+    $("d-count").textContent = shown.length + " / " + members.features.length;
+  }
+}
+function applyFilter() {
+  const f = activeFilter();
+  ["members","members-label"].forEach(id => map.getLayer(id) && map.setFilter(id, f));
+  updateStats();
+}
+function buildColorLegend() {
+  const table = { status:STATUS_COLORS, tma:TMA_COLORS, sector:SECTOR_COLORS }[state.colorBy];
+  const used = new Set(members.features.map(f => f.properties[state.colorBy]));
+  $("color-legend").innerHTML = state.colorBy === "status" ? "" :
+    Object.entries(table).filter(([k]) => used.has(k)).map(([k, c]) =>
+      `<label class="row" style="cursor:default"><span class="sw" style="background:${c}"></span><span class="grow">${esc(k)}</span></label>`).join("");
+}
+function setPaint() {
+  if (!map.getLayer("members")) return;
+  map.setPaintProperty("members", "circle-color", colorExpr());
+  map.setPaintProperty("members", "circle-radius", radiusExpr());
+  buildColorLegend();
+}
+function buildStatusList() {
+  const el = $("status-list"), agg = {};
+  members.features.forEach(f => { const p = f.properties; (agg[p.status] = agg[p.status] || { n:0, $:0 }); agg[p.status].n++; agg[p.status].$ += p.billed || 0; });
+  const order = Object.keys(STATUS_COLORS).filter(s => agg[s]);
+  el.innerHTML = order.map(s => `<label class="row"><input type="checkbox" data-status="${esc(s)}" checked>
+      <span class="sw" style="background:${STATUS_COLORS[s]}"></span><span class="grow">${esc(s)}</span>
+      <span class="num">${agg[s].n} &middot; ${fmt$(agg[s].$)}</span></label>`).join("");
+  el.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => {
+    cb.checked ? state.statuses.add(cb.dataset.status) : state.statuses.delete(cb.dataset.status);
+    applyFilter();
+  }));
+}
+
+let failures = 0;
+async function unlockDues() {
+  const pw = $("dues-pw").value, msg = $("dues-msg"), btn = $("dues-btn");
+  if (!pw) { msg.textContent = "Enter the password."; return; }
+  btn.disabled = true; msg.className = "msg"; msg.textContent = "Checking…";
+  try {
+    const dues = await decryptDues(window.DUES_ENC, pw);
+    mergeDues(members, dues);
+    state.unlocked = true;
+    state.statuses = new Set(members.features.map(f => f.properties.status));
+    map.getSource("members").setData(members);
+    map.getSource("rings").setData(ringsData());
+    $("colorBy").insertAdjacentHTML("afterbegin", '<option value="status">Dues status</option>');
+    $("sizeBy").insertAdjacentHTML("beforeend", '<option value="billed">2027 dues $</option>');
+    $("colorBy").value = "status"; state.colorBy = "status";
+    buildStatusList(); setPaint(); applyFilter();
+    $("dues-locked").hidden = true; $("dues-open").hidden = false;
+    $("dues-pw").value = "";
+  } catch (e) {
+    failures++;
+    msg.textContent = e.message === "NOCRYPTO" ? "This browser blocks encryption here. Open the page over https." : "Incorrect password.";
+    await new Promise(r => setTimeout(r, Math.min(failures, 5) * 1000)); /* slow down guessing */
+  }
+  btn.disabled = false;
+}
+$("dues-btn").onclick = unlockDues;
+$("dues-pw").addEventListener("keydown", e => { if (e.key === "Enter") unlockDues(); });
+
+$("colorBy").onchange = e => { state.colorBy = e.target.value; setPaint(); };
+$("sizeBy").onchange  = e => { state.sizeBy  = e.target.value; setPaint(); };
+$("rings").onchange   = e => {
+  state.rings = e.target.checked;
+  ["rings-fill","rings-line"].forEach(id => map.setLayoutProperty(id, "visibility", state.rings ? "visible" : "none"));
+};
+$("ringR").onchange   = e => { state.ringR = +e.target.value; map.getSource("rings").setData(ringsData()); };
+document.querySelectorAll("[data-layer]").forEach(cb => cb.addEventListener("change", () => {
+  state.layers[cb.dataset.layer] = cb.checked;
+  map.setLayoutProperty(cb.dataset.layer, "visibility", cb.checked ? "visible" : "none");
+}));
+$("basemap").onchange = e => { state.basemap = e.target.value; map.setStyle(CONFIG.basemaps[state.basemap]); };
+
+/* load context layers */
+function refreshSources() { ["lines","cr","rapid","bike"].forEach(k => map.getSource(k) && map.getSource(k).setData(data[k])); }
+
+function computeNearest() {
+  const rapidPts = data.rapid.features, bikePts = data.bike.features;
+  if (!rapidPts.length || !bikePts.length) return;
+  let rapid800 = 0, bike400 = 0;
+  members.features.forEach(f => {
+    const c = f.geometry.coordinates;
+    const best = pts => pts.reduce((b, s) => { const m = haversine(c, s.geometry.coordinates); return m < b.m ? { m, name: s.properties.name } : b; }, { m: Infinity, name: "" });
+    const r = best(rapidPts), b = best(bikePts);
+    nearest[f.properties.org_id] = { rapid:r, bike:b };
+    if (r.m <= 800) rapid800++;
+    if (b.m <= 400) bike400++;
+  });
+  const total = members.features.length;
+  $("s-rapid").textContent = rapid800 + " / " + total;
+  $("s-bike").textContent  = bike400 + " / " + total;
+}
+
+async function loadContext() {
+  const jobs = [
+    getJSON(CONFIG.sources.rapidStations).then(g => {
+      data.rapid.features = g.features.map(f => ({ type:"Feature", geometry:f.geometry, properties:{ name:f.properties.STATION, line:f.properties.LINE } }));
+      $("n-rapid").textContent = data.rapid.features.length;
+    }),
+    getJSON(CONFIG.sources.commuterRail).then(g => {
+      data.cr.features = g.features.filter(f => f.properties.STATE === "MA").map(f => ({ type:"Feature", geometry:f.geometry, properties:{ name:(f.properties.STATION||"").trim(), line:f.properties.LINE_BRNCH } }));
+      $("n-cr").textContent = data.cr.features.length;
+    }),
+    getJSON(CONFIG.sources.bluebikes).then(g => {
+      data.bike.features = g.data.stations.map(s => ({ type:"Feature", geometry:{ type:"Point", coordinates:[s.lon, s.lat] }, properties:{ name:s.name, capacity:s.capacity } }));
+      $("n-bike").textContent = data.bike.features.length;
+    }),
+    ...Object.entries(CONFIG.routes).map(([route, color]) =>
+      getJSON(CONFIG.sources.mbtaShapes + encodeURIComponent(route)).then(j => {
+        j.data.forEach(s => data.lines.features.push({ type:"Feature", properties:{ route, color }, geometry:{ type:"LineString", coordinates:decodePolyline(s.attributes.polyline) } }));
+      }))
+  ];
+  const results = await Promise.allSettled(jobs);
+  results.filter(r => r.status === "rejected").forEach(r => console.warn("Layer failed to load:", r.reason));
+  refreshSources();
+  computeNearest();
+}
+
+/* init */
+buildColorLegend();
+updateStats();
+map.once("load", () => {
+  const b = new maplibregl.LngLatBounds();
+  members.features.forEach(f => b.extend(f.geometry.coordinates));
+  map.fitBounds(b, { padding:{ top:60, bottom:60, left:340, right:60 }, maxZoom:14, duration:0 });
+  loadContext();
+});
+</script>
+</body>
+</html>

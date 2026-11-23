@@ -1,0 +1,6 @@
+.DS_Store
+__pycache__/
+*.pyc
+
+# Sensitive: per-member dues status and amounts. Never commit.
+data/dues_private.csv
