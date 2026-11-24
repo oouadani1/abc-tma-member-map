@@ -17,16 +17,19 @@ Double-click `index.html`, or serve the folder (`python3 -m http.server`). For h
 | MBTA rapid transit lines (Red, Orange, Blue, Green B-E, Mattapan, Silver SL1-SL5/SLW) | MBTA V3 API canonical route patterns and shapes (live, cached 24 h in the browser) |
 | MBTA Commuter Rail ("Purple Line") lines and stations | MBTA V3 API (live) |
 | MBTA Ferry (default off) | MBTA V3 API |
-| MBTA Bus (default off; routes at zoom 11.5+, stops load on demand at zoom 15+) | MBTA V3 API |
+| MBTA Bus (default off; routes at zoom 11.5+, stops at zoom 15+; commuter/express buses excluded) | MBTA V3 API |
 | Station and bus stop popups: next two departures per line, grouped by direction | MBTA V3 `/predictions` (live) |
 | Bluebikes stations (name, docks, live bikes and open docks on click) | Bluebikes GBFS (live) |
 | Bike lanes (green), shared-use paths (teal), walking trails | MAPC AllTrails map service (image overlay, recolored in the browser) |
 | Walk / bike network view (5, 10, 15 min) for a clicked member | `data/network.json` (OpenStreetMap street graph, see below) |
 | Basemap | CARTO Positron / Dark Matter via MapLibre GL JS |
 
-Transit toggles are nested: MBTA Transit > Subway & Silver Line / Commuter Rail / Bus / Ferry > individual lines. Parent checkboxes switch their
-children on or off and show a partial state when only some are on. Popups on members show nearest rapid transit and Bluebikes station
-(straight-line meters). The panel counts members within 500 m of a subway station and 250 m of a Bluebikes station (straight-line; 80 m is about a minute of walking). The member popup also lists the nearest bus stop and the routes serving it.
+Transit toggles are nested: MBTA Transit > Subway & Silver Line / Commuter Rail / Bus / Ferry > individual lines. Organizations are drawn as rounded
+squares (colored by sector, or by dues status once unlocked); stations and stops are circles.
+
+The four tiles under the organization count show the share of organizations with a commuter rail station, subway station, bus stop or Bluebikes
+station within 50, 250, 500 or 1,000 m of walking along streets and paths (the same street network as the network view, not straight-line).
+The "i" button next to the title has a plain-text glossary of walking and biking speeds and conversions.
 
 ## Network view (walk / bike)
 

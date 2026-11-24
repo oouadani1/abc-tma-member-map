@@ -11,7 +11,7 @@
   * { box-sizing: border-box; }
   html, body { margin:0; height:100%; font:13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); }
   #map { position:absolute; inset:0; }
-  #panel { position:absolute; top:12px; left:12px; bottom:12px; width:310px; overflow:auto; background:var(--card); backdrop-filter: blur(6px);
+  #panel { position:absolute; top:12px; left:12px; bottom:12px; width:330px; overflow:auto; background:var(--card); backdrop-filter: blur(6px);
            border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 24px rgba(20,30,50,.12); padding:14px 14px 10px; z-index:2; }
   h1 { font-size:16px; margin:0 0 2px; letter-spacing:-.01em; }
   .sub { color:var(--muted); font-size:12px; margin-bottom:10px; }
@@ -33,7 +33,7 @@
   .ctl { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:3px 0; }
   .note { color:var(--muted); font-size:11px; margin-top:12px; border-top:1px solid var(--line); padding-top:8px; }
   .prow { display:flex; align-items:center; gap:4px; padding:2px 0; }
-  .prow .chev { width:14px; text-align:center; color:var(--muted); cursor:pointer; user-select:none; font-size:10px; }
+  .prow .chev { width:22px; text-align:center; color:var(--ink); cursor:pointer; user-select:none; font-size:17px; line-height:1; padding:2px 0; }
   .prow label { display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; flex:1; }
   .kids { margin-left:20px; border-left:2px solid var(--line); padding-left:8px; }
   .kids.closed { display:none; }
@@ -63,7 +63,16 @@
   .seg button:first-child { border-radius:6px 0 0 6px; margin-left:0; }
   .seg button:last-child { border-radius:0 6px 6px 0; }
   .seg button.on { background:#1b2430; color:#fff; border-color:#1b2430; }
-  .netleg { color:var(--muted); font-size:11px; margin:2px 0 4px; }
+  .one { display:flex; align-items:baseline; gap:6px; }
+  .one b { display:inline; font-size:18px; }
+  .stat.one span { font-size:13px; color:var(--ink); }
+  .stat .lab { display:block; color:var(--muted); font-size:11px; }
+  .info { width:20px; height:20px; padding:0; border-radius:50%; font:italic 600 12px Georgia, serif; line-height:18px; margin-left:6px; vertical-align:middle; color:var(--muted); }
+  #gloss { border:1px solid var(--line); border-radius:8px; background:#fff; padding:8px 10px; margin:0 0 10px; font-size:12px; }
+  #gloss table { border-collapse:collapse; width:100%; margin:2px 0 6px; }
+  #gloss td { padding:1px 0; } #gloss td:last-child { text-align:right; color:var(--muted); }
+  #gloss .g { font-weight:600; padding-top:5px; }
+  #gloss p { margin:3px 0; color:var(--muted); }
   #netStatus { font-size:12px; color:var(--ink); margin:4px 0; min-height:17px; }
   .next .dir { font-weight:600; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; margin:6px 0 1px; color:var(--ink); }
   @media (max-width: 640px) { #panel { width:auto; right:12px; bottom:auto; max-height:46%; } }
@@ -72,29 +81,50 @@
 <body>
 <div id="map"></div>
 <div id="panel">
-  <h1>ABC TMA Member Map</h1>
-  <div class="sub">Member properties &middot; snapshot <span id="snap"></span></div>
+  <h1>ABC TMA Member Map <button class="info" id="infoBtn" type="button" title="Glossary and conversions">i</button></h1>
+  <div class="sub">TMA member locations and their transit access. Click a member for its walk or bike network; zoom in to see bus stops.</div>
 
-  <div class="stats">
-    <div class="stat" style="grid-column:1/-1"><b id="s-count">–</b><span>properties shown</span></div>
-    <div class="stat"><b id="s-rapid">…</b><span>within 500 m of a subway station</span></div>
-    <div class="stat"><b id="s-bike">…</b><span>within 250 m of a Bluebikes station</span></div>
+  <div id="gloss" hidden>
+    <table>
+      <tr><td class="g" colspan="2">Walking: 80 m per minute (4.8 km/h)</td></tr>
+      <tr><td>50 m</td><td>under 1 min</td></tr>
+      <tr><td>250 m</td><td>3 min</td></tr>
+      <tr><td>500 m</td><td>6 min</td></tr>
+      <tr><td>1,000 m</td><td>12 min</td></tr>
+      <tr><td class="g" colspan="2">Walk network times</td></tr>
+      <tr><td>5 min</td><td>400 m</td></tr>
+      <tr><td>10 min</td><td>800 m</td></tr>
+      <tr><td>15 min</td><td>1,200 m</td></tr>
+      <tr><td class="g" colspan="2">Biking: 250 m per minute (15 km/h)</td></tr>
+      <tr><td>5 min</td><td>1.25 km</td></tr>
+      <tr><td>10 min</td><td>2.5 km</td></tr>
+      <tr><td>15 min</td><td>3.75 km</td></tr>
+      <tr><td class="g" colspan="2">Conversions</td></tr>
+      <tr><td>100 m</td><td>330 ft</td></tr>
+      <tr><td>1 km</td><td>0.62 mi</td></tr>
+    </table>
+    <p>Distances follow streets and paths, not straight lines. The bike network uses any street, path or cycleway open to bikes.</p>
+    <p>Data: MBTA, Bluebikes, MAPC, OpenStreetMap, CARTO.</p>
   </div>
-  <div class="note" style="margin:6px 0 0;border:0;padding:0">Straight-line distances. 500 m is about a 6-minute walk (80 m/min, 4.8 km/h); 250 m about 3 minutes.</div>
 
-  <h2>Members</h2>
-  <div class="ctl" id="rowColor" hidden><span>Color by</span>
-    <select id="colorBy"><option value="sector">Sector</option></select></div>
-  <div class="ctl" id="rowSize" hidden><span>Size by</span>
-    <select id="sizeBy"><option value="fixed">Fixed</option></select></div>
-  <div id="color-legend"></div>
+  <div class="stat one"><b id="s-count">–</b><span id="s-label">Organizations</span></div>
+
+  <h2>Within walking distance of</h2>
+  <div class="ctl"><span class="seg" id="accTime"><button type="button" data-m="50">50 m</button><button type="button" data-m="250">250 m</button><button type="button" data-m="500" class="on">500 m</button><button type="button" data-m="1000">1,000 m</button></span></div>
+  <div class="stats">
+    <div class="stat"><b id="a-cr">…</b><span class="lab">Commuter rail</span></div>
+    <div class="stat"><b id="a-subway">…</b><span class="lab">Subway</span></div>
+    <div class="stat"><b id="a-bus">…</b><span class="lab">Bus</span></div>
+    <div class="stat"><b id="a-bike">…</b><span class="lab">Bluebikes</span></div>
+  </div>
+
+  <div id="color-legend" style="margin-top:8px"></div>
 
   <h2>Network view</h2>
   <div class="ctl"><span>Click a member to show</span>
     <select id="netMode"><option value="walk">Walk network</option><option value="bike">Bike network</option><option value="off">Off</option></select></div>
   <div class="ctl"><span>Travel time</span>
     <span class="seg" id="netTime"><button type="button" data-min="5">5</button><button type="button" data-min="10" class="on">10</button><button type="button" data-min="15">15</button></span></div>
-  <div class="netleg" id="netLegend"></div>
   <div id="netStatus">Click a member property to draw its network.</div>
   <button id="netClear" type="button" hidden>Clear</button>
 
@@ -119,16 +149,16 @@
       </div>
       <div id="dues-open" hidden>
         <div class="stats" style="margin:4px 0 6px">
-          <div class="stat"><b id="d-total">–</b><span>2027 dues shown</span></div>
-          <div class="stat"><b id="d-count">–</b><span>properties shown</span></div>
+          <div class="stat"><b id="d-total">–</b><span class="lab">2027 dues shown</span></div>
+          <div class="stat"><b id="d-count">–</b><span class="lab">Organizations shown</span></div>
         </div>
+        <div class="ctl"><span>Color by</span><select id="colorBy"><option value="status">Dues status</option><option value="sector">Sector</option></select></div>
+        <div class="ctl"><span>Size by</span><select id="sizeBy"><option value="fixed">Same size</option><option value="billed">2027 dues $</option></select></div>
         <div id="status-list"></div>
-        <div class="msg ok">Unlocked. Color/size by dues are now in the Members controls.</div>
       </div>
     </div>
   </details>
 
-  <div class="note">Transit: MBTA V3 API (official routes, stops and live predictions). Bikes: Bluebikes GBFS (live). Trails and bike lanes: MAPC. Basemap: CARTO / OpenStreetMap. Click a property, station or bike station for details.</div>
 </div>
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -164,7 +194,7 @@ const CR_ROUTES = [
   ["CR-Kingston","Kingston"], ["CR-Lowell","Lowell"], ["CR-Needham","Needham"], ["CR-Newburyport","Newburyport/Rockport"], ["CR-Providence","Providence/Stoughton"]
 ];
 const CR_COLOR = "#80276C", FERRY_COLOR = "#008EAA";
-const BUS_TIERS = { "bus-frequent":{ label:"Frequent bus", color:"#d99a00" }, "bus-local":{ label:"Local bus", color:"#8793a3" }, "bus-other":{ label:"Commuter, coverage & other", color:"#b3bcc8" } };
+const BUS_TIERS = { "bus-frequent":{ label:"Frequent bus", color:"#b8860b" }, "bus-local":{ label:"Local bus", color:"#f5c400" }, "bus-other":{ label:"Other bus", color:"#aeb7c2" } };
 const GROUPS = [ /* second level of the MBTA Transit tree */
   { id:"rt",  label:"Subway & Silver Line", open:true,  children: RT_GROUPS.map(g => ({ id:g.id, label:RT_NAMES[g.id] + (g.id === "Green" ? " (B, C, D, E)" : g.id === "Silver" ? " (bus rapid transit)" : ""), color:RT_COLORS[g.id] })) },
   { id:"cr",  label:"Commuter Rail", open:false, children: CR_ROUTES.map(r => ({ id:r[0], label:r[1], color:CR_COLOR })) },
@@ -289,6 +319,7 @@ async function fetchBus() { // loaded only when a bus layer is first switched on
   routes.data.forEach(r => {
     if (SILVER_IDS.split(",").indexOf(r.id) >= 0) return;
     const d = r.attributes.description;
+    if (d === "Commuter Bus") return; /* express suburban buses are left off the map */
     info[r.id] = { label:r.attributes.short_name || r.id, tier: d === "Frequent Bus" ? "bus-frequent" : d === "Local Bus" ? "bus-local" : "bus-other" };
   });
   const ids = Object.keys(info);
@@ -348,7 +379,6 @@ const state = { unlocked:false, statuses:new Set(), colorBy:"sector", sizeBy:"fi
                 layers:{ bike:true, "mapc-bike":true, "mapc-shared":true, "mapc-walk":false },
                 basemap:"light", busLoaded:false, busLoading:false };
 
-$("snap").textContent = window.MEMBERS_SNAPSHOT || "";
 if (window.DUES_ENC) $("dues").hidden = false;
 
 /* map */
@@ -356,16 +386,31 @@ const map = new maplibregl.Map({ container:"map", style: CONFIG.basemaps.light, 
 map.addControl(new maplibregl.NavigationControl({ showCompass:false }), "top-right");
 map.addControl(new maplibregl.ScaleControl({ unit:"imperial" }), "bottom-right");
 
-function colorExpr() {
+/* organizations are rounded squares (transit stops and bike stations are circles); one small image per color */
+const GRAY = "#98a2b3", iconId = c => "org-" + c.slice(1);
+function addOrgIcons() {
+  const colors = new Set([GRAY, ...Object.values(SECTOR_COLORS), ...Object.values(STATUS_COLORS)]);
+  colors.forEach(c => {
+    if (map.hasImage(iconId(c))) return;
+    const cv = document.createElement("canvas"); cv.width = cv.height = 36;
+    const g = cv.getContext && cv.getContext("2d"); if (!g) return;
+    const r = 7, x = 4, y = 4, w = 28;
+    g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + w, r); g.arcTo(x + w, y + w, x, y + w, r); g.arcTo(x, y + w, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+    g.shadowColor = "rgba(0,0,0,.35)"; g.shadowBlur = 3; g.fillStyle = c; g.fill();
+    g.shadowColor = "transparent"; g.lineWidth = 3; g.strokeStyle = "#fff"; g.stroke();
+    map.addImage(iconId(c), g.getImageData(0, 0, 36, 36), { pixelRatio:2 });
+  });
+}
+function iconExpr() {
   const prop = state.colorBy, table = { status:STATUS_COLORS, sector:SECTOR_COLORS }[prop];
   const expr = ["match", ["get", prop]];
-  Object.entries(table).forEach(([k, v]) => expr.push(k, v));
-  expr.push("#98a2b3");
+  Object.entries(table).forEach(([k, v]) => expr.push(k, iconId(v)));
+  expr.push(iconId(GRAY));
   return expr;
 }
-function radiusExpr() {
-  if (state.sizeBy === "billed") return ["interpolate", ["linear"], ["coalesce", ["get","billed"], 0], 0, 5, 3850, 8, 8750, 12, 14750, 18];
-  return 8;
+function sizeExpr() {
+  if (state.sizeBy === "billed") return ["interpolate", ["linear"], ["coalesce", ["get","billed"], 0], 0, 0.7, 3850, 1, 8750, 1.45, 14750, 2.1];
+  return 1;
 }
 function activeFilter() { // null (no filter) until dues are unlocked and a status is switched off
   if (!state.unlocked) return null;
@@ -420,9 +465,11 @@ function addAllLayers() {
   map.addLayer({ id:"bike", type:"circle", source:"bike", layout:{ visibility:vis("bike") },
     paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2,14,5], "circle-color":"#2b8cbe", "circle-opacity":0.85, "circle-stroke-color":"#fff", "circle-stroke-width":0.8 } });
   map.addLayer({ id:"selected-ring", type:"circle", source:"selected",
-    paint:{ "circle-radius":16, "circle-color":"rgba(0,0,0,0)", "circle-stroke-color":nc, "circle-stroke-width":3, "circle-stroke-opacity":0.9 } });
-  map.addLayer({ id:"members", type:"circle", source:"members",
-    paint:{ "circle-radius":radiusExpr(), "circle-color":colorExpr(), "circle-opacity":0.92, "circle-stroke-color":"#fff", "circle-stroke-width":1.5 } });
+    paint:{ "circle-radius":15, "circle-color":"rgba(0,0,0,0)", "circle-stroke-color":nc, "circle-stroke-width":3, "circle-stroke-opacity":0.9 } });
+  addOrgIcons();
+  map.addLayer({ id:"members", type:"symbol", source:"members",
+    layout:{ "icon-image":iconExpr(), "icon-size":sizeExpr(), "icon-allow-overlap":true, "icon-ignore-placement":true },
+    paint:{ "icon-opacity":0.95 } });
   map.addLayer({ id:"members-label", type:"symbol", source:"members", minzoom:13.2,
     layout:{ "text-field":["get","name"], "text-font":["Noto Sans Regular"], "text-size":11, "text-offset":[0,1.3], "text-anchor":"top", "text-optional":true },
     paint:{ "text-color": state.basemap === "dark" ? "#e8edf3" : "#1b2430", "text-halo-color": state.basemap === "dark" ? "#111" : "#fff", "text-halo-width":1.2 } });
@@ -445,51 +492,36 @@ function applyTransit() {
   setFilt("bus-lines", inFilter("tier", bus)); setFilt("bus-labels", inFilter("tier", bus));
   setVis("bus-lines", bus.length > 0); setVis("bus-labels", bus.length > 0); setVis("bus-stops", bus.length > 0);
   if (bus.length && !state.busLoaded && !state.busLoading) loadBus();
-  if (bus.length) loadBusStops();
   syncTree();
 }
 async function loadBus() {
   state.busLoading = true; showBusy("Loading bus routes…");
   try {
-    data.busLines = { type:"FeatureCollection", features: await cached("abc-mbta-bus-v1", fetchBus) };
+    data.busLines = { type:"FeatureCollection", features: await cached("abc-mbta-bus-v2", fetchBus) };
     state.busLoaded = true;
     map.getSource("busLines") && map.getSource("busLines").setData(data.busLines);
     showBusy("");
   } catch (e) { console.warn(e); showBusy("Bus routes could not be loaded."); }
   state.busLoading = false;
 }
-const BUS_HINT = "Routes appear at zoom " + BUS_LINE_ZOOM + "+, stops at " + BUS_STOP_ZOOM + "+ (click a stop for departures).";
-function showBusy(t) { const el = document.querySelector('[data-kids="bus"] .busy'); if (el) el.textContent = t || BUS_HINT; }
+function showBusy(t) { const el = document.querySelector('[data-kids="bus"] .busy'); if (el) { el.textContent = t || ""; el.hidden = !t; } }
 
-/* bus stops load on demand per ~1 km grid cell while zoomed in */
-const BUS_CELL = 0.01, busCells = new Set(), busSeen = new Set(); let busStopsBusy = false, busStopsAgain = false;
-async function loadBusStops() {
-  if (!visibleOf("bus").length || map.getZoom() < BUS_STOP_ZOOM) return;
-  if (busStopsBusy) { busStopsAgain = true; return; }
-  const b = map.getBounds(), cells = [];
-  for (let i = Math.floor(b.getSouth() / BUS_CELL); i <= Math.floor(b.getNorth() / BUS_CELL); i++)
-    for (let j = Math.floor(b.getWest() / BUS_CELL); j <= Math.floor(b.getEast() / BUS_CELL); j++)
-      if (!busCells.has(i + "," + j)) cells.push([i, j]);
-  if (!cells.length) return;
-  if (cells.length > 12) { showBusy("Zoom in a little more to load bus stops."); return; }
-  busStopsBusy = true; showBusy("Loading bus stops…");
-  try {
-    for (const [i, j] of cells) {
-      const lat = (i + 0.5) * BUS_CELL, lon = (j + 0.5) * BUS_CELL;
-      const r = await mbta("/stops?filter[route_type]=3&filter[latitude]=" + lat.toFixed(5) + "&filter[longitude]=" + lon.toFixed(5) +
-        "&filter[radius]=" + (BUS_CELL * 0.75) + "&fields[stop]=name,latitude,longitude,location_type&page[limit]=500");
-      r.data.forEach(s => { if (s.attributes.location_type === 0 && !busSeen.has(s.id)) { busSeen.add(s.id);
-        data.busStops.features.push({ type:"Feature", geometry:{ type:"Point", coordinates:[s.attributes.longitude, s.attributes.latitude] },
-          properties:{ id:s.id, name:s.attributes.name, lines:"|Bus|" } }); } });
-      busCells.add(i + "," + j);
-      map.getSource("busStops") && map.getSource("busStops").setData(data.busStops);
-      await sleep(350);
-    }
-    showBusy("");
-  } catch (e) { console.warn(e); showBusy("Bus stops could not be loaded."); }
-  busStopsBusy = false;
-  if (busStopsAgain) { busStopsAgain = false; loadBusStops(); }
+/* bus stops: one query for the whole study area (also feeds the access tiles); cached in the browser */
+async function fetchBusStops() {
+  const pts = members.features.map(f => f.geometry.coordinates);
+  const clon = pts.reduce((a, c) => a + c[0], 0) / pts.length, clat = pts.reduce((a, c) => a + c[1], 0) / pts.length;
+  const rad = Math.max(...pts.map(c => Math.hypot(c[0] - clon, c[1] - clat))) + 0.03; /* degrees, about 3 km of padding */
+  let path = "/stops?filter[route_type]=3&filter[latitude]=" + clat.toFixed(4) + "&filter[longitude]=" + clon.toFixed(4) + "&filter[radius]=" + rad.toFixed(3) +
+    "&fields[stop]=name,latitude,longitude,location_type&page[limit]=5000";
+  const rows = [];
+  for (let page = 0; path && page < 5; page++) {
+    const j = await mbta(path);
+    j.data.forEach(s => { if (s.attributes.location_type === 0) rows.push([s.id, s.attributes.name, s.attributes.longitude, s.attributes.latitude]); });
+    path = j.links && j.links.next ? j.links.next.replace(CONFIG.mbta, "") : null;
+  }
+  return rows;
 }
+const busStopsFC = rows => ({ type:"FeatureCollection", features: rows.map(r => ({ type:"Feature", geometry:{ type:"Point", coordinates:[r[2], r[3]] }, properties:{ id:r[0], name:r[1], lines:"|Bus|" } })) });
 
 function buildTree() {
   const leaf = c => `<label class="row"><input type="checkbox" data-leaf="${esc(c.id)}"><span class="sw ln" style="background:${c.color}"></span><span class="grow">${esc(c.label)}</span></label>`;
@@ -524,8 +556,6 @@ function syncTree() { // checkbox states: parents show checked / unchecked / par
    data/network.json is a compact street graph built from OpenStreetMap by scripts/build_network.py (GitHub Action).
    Shortest paths run in the browser, so any member (including newly added ones) works without precomputing. */
 const NET_COLORS = { walk:"#e6007e", bike:"#6d28d9" };
-const NEAR = { subway:500, bike:250 }; /* meters, straight-line, for the summary tiles */
-const walkMin = m => Math.max(1, Math.round(m / 80)); /* 80 m/min = 4.8 km/h */
 const NET = { speed:{ walk:80, bike:250 }, /* meters per minute: 4.8 km/h walking, 15 km/h cycling */
               mode:"walk", min:10, G:null, loading:null, adj:{}, cache:{}, sel:null, MIN_COMP:30 };
 
@@ -559,15 +589,28 @@ function adjacency(mode) { // CSR adjacency for one mode + connected components 
   for (let i = 0; i < n; i++) { comp[i] = find(i); size[comp[i]]++; }
   return (NET.adj[mode] = { start, nbr, wt, comp, size, bit });
 }
-function snapNode(A, lon, lat) {
-  const G = NET.G, kx = Math.cos(lat * Math.PI / 180) * 111320, ky = 111320;
-  let best = -1, bd = Infinity;
-  for (let i = 0; i < G.n; i++) {
-    if (A.start[i + 1] === A.start[i] || A.size[A.comp[i]] < NET.MIN_COMP) continue;
-    const dx = (G.lon[i] - lon) * kx, dy = (G.lat[i] - lat) * ky, d = dx*dx + dy*dy;
-    if (d < bd) { bd = d; best = i; }
+function snapNode(A, lon, lat, maxM = 400) { // nearest eligible node via a coarse grid; null beyond maxM meters
+  const G = NET.G, CELL = 0.002;
+  if (!A.grid) {
+    A.grid = new Map();
+    for (let i = 0; i < G.n; i++) {
+      if (A.start[i + 1] === A.start[i] || A.size[A.comp[i]] < NET.MIN_COMP) continue;
+      const k = Math.floor(G.lat[i] / CELL) + "," + Math.floor(G.lon[i] / CELL);
+      (A.grid.get(k) || A.grid.set(k, []).get(k)).push(i);
+    }
   }
-  return best < 0 || bd > 400 * 400 ? null : { node:best, m:Math.sqrt(bd) };
+  const kx = Math.cos(lat * Math.PI / 180) * 111320, ky = 111320, ci = Math.floor(lat / CELL), cj = Math.floor(lon / CELL);
+  const minCell = CELL * kx, maxR = Math.ceil(maxM / minCell) + 1;
+  let best = -1, bd = Infinity;
+  for (let r = 0; r <= maxR; r++) {
+    for (let di = -r; di <= r; di++) for (let dj = -r; dj <= r; dj++) {
+      if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
+      const list = A.grid.get((ci + di) + "," + (cj + dj)); if (!list) continue;
+      for (const i of list) { const dx = (G.lon[i] - lon) * kx, dy = (G.lat[i] - lat) * ky, d = dx*dx + dy*dy; if (d < bd) { bd = d; best = i; } }
+    }
+    if (best >= 0 && Math.sqrt(bd) <= r * minCell) break;
+  }
+  return best < 0 || bd > maxM * maxM ? null : { node:best, m:Math.sqrt(bd) };
 }
 function dijkstra(A, src, d0, maxD) { // shortest distance (m) from src to every node, stopping beyond maxD
   const dist = new Float64Array(NET.G.n).fill(Infinity), hd = [], hn = [];
@@ -604,11 +647,18 @@ function clipPts(pts, frac) { // first `frac` (0-1) of a polyline, by length
   }
   return out;
 }
+function reach(lon, lat, mode) { // shortest network distance (m) from a point to every node, up to 15 minutes; cached
+  const A = adjacency(mode), key = mode + "|" + lon + "|" + lat;
+  if (!NET.cache[key]) {
+    const snap = snapNode(A, lon, lat); if (!snap) return null;
+    NET.cache[key] = { snap, dist:dijkstra(A, snap.node, snap.m, 15 * NET.speed[mode]) };
+  }
+  return NET.cache[key];
+}
 function computeNetwork(lon, lat, mode, minutes) { // -> { fc, km, snapM } or null when no network is near the point
   const A = adjacency(mode), G = NET.G, speed = NET.speed[mode];
-  const snap = snapNode(A, lon, lat); if (!snap) return null;
-  const key = mode + "|" + lon + "|" + lat;
-  const dist = NET.cache[key] || (NET.cache[key] = dijkstra(A, snap.node, snap.m, 15 * speed));
+  const rc = reach(lon, lat, mode); if (!rc) return null;
+  const snap = rc.snap, dist = rc.dist;
   const limit = minutes * speed, bands = { 5:[], 10:[], 15:[] }; let used = 0;
   for (let e = 0; e < G.N; e++) {
     if (!(G.em[e] & A.bit)) continue;
@@ -627,9 +677,6 @@ function setSource(k, fc) { data[k] = fc; map.getSource(k) && map.getSource(k).s
 function netStatus(t) { $("netStatus").textContent = t; }
 function drawNetLegend() {
   const c = NET_COLORS[NET.mode] || NET_COLORS.walk;
-  $("netLegend").textContent = NET.mode === "off" ? "" : NET.mode === "walk"
-    ? "Walking at 4.8 km/h: 5 / 10 / 15 min is about 400 / 800 / 1,200 m of street or path."
-    : "Biking at 15 km/h on any street, path or cycleway that allows bikes (not limited to marked bike lanes): 5 / 10 / 15 min is about 1.25 / 2.5 / 3.75 km.";
   ["net-glow", "net-core"].forEach(id => map.getLayer(id) && map.setPaintProperty(id, "line-color", c));
   map.getLayer("selected-ring") && map.setPaintProperty("selected-ring", "circle-stroke-color", c);
 }
@@ -664,6 +711,46 @@ document.querySelectorAll("#netTime button").forEach(b => b.addEventListener("cl
   showNetwork();
 }));
 
+/* walking access: share of organizations with a stop within N meters along streets and paths (same walk network as above) */
+const ACC = { m:500, dist:null };
+function snapFacilities(A, feats) { // best snap distance per node for a set of point features; Infinity when none
+  const off = new Float64Array(NET.G.n).fill(Infinity);
+  feats.forEach(f => { const c = f.geometry.coordinates, sn = snapNode(A, c[0], c[1], 150); if (sn && sn.m < off[sn.node]) off[sn.node] = sn.m; });
+  return off;
+}
+async function computeAccess() {
+  try { await loadGraph(); } catch (e) { ACC.dist = null; renderAccess(); return; }
+  const A = adjacency("walk"), n = NET.G.n;
+  const subway = data.rapid.features.filter(f => SUBWAY_LINES.some(l => f.properties.lines.indexOf("|" + l + "|") >= 0));
+  const fac = { cr:snapFacilities(A, data.cr.features), subway:snapFacilities(A, subway), bus:snapFacilities(A, data.busStops.features), bike:snapFacilities(A, data.bike.features) };
+  const cats = Object.keys(fac);
+  ACC.dist = {};
+  members.features.forEach(f => {
+    const best = { cr:Infinity, subway:Infinity, bus:Infinity, bike:Infinity }, rc = reach(f.geometry.coordinates[0], f.geometry.coordinates[1], "walk");
+    if (rc) for (let i = 0; i < n; i++) {
+      const d = rc.dist[i]; if (!(d <= 1000)) continue;
+      for (const c of cats) { const o = fac[c][i]; if (o < Infinity && d + o < best[c]) best[c] = d + o; }
+    }
+    ACC.dist[f.properties.org_id] = best;
+  });
+  renderAccess();
+}
+function renderAccess() {
+  const shown = shownFeatures();
+  [["cr", "a-cr"], ["subway", "a-subway"], ["bus", "a-bus"], ["bike", "a-bike"]].forEach(([c, id]) => {
+    const el = $(id); if (!el) return;
+    if (!ACC.dist || !shown.length) { el.textContent = "–"; el.title = ""; return; }
+    const k = shown.filter(f => ACC.dist[f.properties.org_id] && ACC.dist[f.properties.org_id][c] <= ACC.m).length;
+    el.textContent = Math.round(100 * k / shown.length) + "%"; el.title = k + " of " + shown.length;
+  });
+}
+document.querySelectorAll("#accTime button").forEach(b => b.addEventListener("click", () => {
+  ACC.m = +b.dataset.m;
+  document.querySelectorAll("#accTime button").forEach(x => x.classList.toggle("on", x === b));
+  renderAccess();
+}));
+$("infoBtn").onclick = () => { $("gloss").hidden = !$("gloss").hidden; };
+
 /* popups and clicks */
 const popup = new maplibregl.Popup({ closeButton:true, maxWidth:"320px" });
 const CLICKABLE = ["members", "rapid", "cr", "ferry", "bike", "bus-stops"];
@@ -679,14 +766,15 @@ function memberHTML(p) {
     rows.push(["2027 dues", p.billed && p.billed !== "null" ? fmt$(p.billed) : "–"]);
   }
   rows.push(["Sector", esc(p.sector)], ["TMA", esc(p.tma)]);
-  const dist = x => `${esc(x.name)} &middot; ${Math.round(x.m)} m (~${walkMin(x.m)} min walk)`;
-  rows.push(["Nearest subway", n.rapid ? dist(n.rapid) : "…"]);
-  rows.push(["Nearest Bluebikes", n.bike ? dist(n.bike) : "…"]);
-  rows.push(["Nearest bus stop", `<span class="nbus">${n.bus ? busText(n.bus) : "…"}</span>`]);
+  rows.push(["Nearest subway", n.rapid ? esc(n.rapid.name) : "…"]);
+  rows.push(["Nearest bus stop", `<span class="nbus">${n.bus ? esc(n.bus.name) : "…"}</span>`]);
+  rows.push(["Nearest Bluebikes", n.bike ? esc(n.bike.name) : "…"]);
+  if (n.ferry) rows.push(["Nearest ferry", `<span class="nferry">${esc(n.ferry.name)}</span>`]);
   return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">${esc(p.address)}, ${esc(p.city)}</div><table>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table></div>`;
 }
 function stationHTML(p) {
-  return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">${linesBadges(p.lines)}</div><div class="next">Loading next trains…</div></div>`;
+  const rts = p.lines === "|Bus|" || p.lines === "|Ferry|" ? '<div class="addr rts" style="margin:0 0 2px"></div>' : "";
+  return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">${linesBadges(p.lines)}</div>${rts}<div class="next">Loading next trains…</div></div>`;
 }
 function bikeHTML(p) {
   return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">Bluebikes station${p.short_name ? " &middot; " + esc(p.short_name) : ""}</div>
@@ -724,26 +812,26 @@ async function loadNext(stopId, el) {
       : '<div class="h">No upcoming departures reported right now.</div>';
   } catch (e) { el.textContent = "Live departures unavailable."; }
 }
-const busText = b => b.none ? "none within ~1 km" : b.err ? "unavailable" :
-  `${esc(b.name)} &middot; ${Math.round(b.m)} m (~${walkMin(b.m)} min walk)` + (b.routes && b.routes.length ? `<br><span style="color:#6b7684">Routes ${b.routes.slice(0, 8).map(esc).join(", ")}${b.routes.length > 8 ? "…" : ""}</span>` : "");
-async function loadNearestBus(p, coords, root) { // nearest MBTA bus stop + routes that serve it, cached per member
-  const o = nearest[p.org_id] = nearest[p.org_id] || {};
-  if (!o.bus) {
-    try {
-      let stop = null;
-      for (const rad of [0.004, 0.01]) { /* about 450 m, then 1.1 km, in degrees */
-        const j = await mbta("/stops?filter[route_type]=3&filter[latitude]=" + coords[1] + "&filter[longitude]=" + coords[0] + "&filter[radius]=" + rad +
-          "&fields[stop]=name,latitude,longitude,location_type&page[limit]=100");
-        const c = j.data.filter(s => s.attributes.location_type === 0)
-          .map(s => ({ id:s.id, name:s.attributes.name, m:haversine(coords, [s.attributes.longitude, s.attributes.latitude]) })).sort((a, b) => a.m - b.m);
-        if (c.length) { stop = c[0]; break; }
-      }
-      if (stop) { const r = await mbta("/routes?filter[stop]=" + encodeURIComponent(stop.id) + "&fields[route]=short_name,long_name");
-        stop.routes = r.data.map(x => x.attributes.short_name || x.attributes.long_name); }
-      o.bus = stop || { none:true };
-    } catch (e) { o.bus = { err:true }; }
+const routeCache = {};
+function stopRoutes(id) { // routes serving a stop, cached
+  return routeCache[id] || (routeCache[id] = mbta("/routes?filter[stop]=" + encodeURIComponent(id) + "&fields[route]=short_name,long_name")
+    .then(r => r.data.map(x => x.attributes)).catch(() => []));
+}
+async function fillMemberPopup(p, root) { // add the routes serving the nearest bus stop and ferry stop
+  const n = nearest[p.org_id] || {}, sub = t => `<br><span style="color:#6b7684">${t}</span>`;
+  if (n.bus && root && root.querySelector(".nbus")) {
+    const r = await stopRoutes(n.bus.id), names = r.map(x => x.short_name || x.long_name);
+    if (names.length && root.querySelector(".nbus")) root.querySelector(".nbus").innerHTML = esc(n.bus.name) + sub("Routes " + names.slice(0, 8).map(esc).join(", ") + (names.length > 8 ? "…" : ""));
   }
-  const el = root && root.querySelector(".nbus"); if (el) el.innerHTML = busText(o.bus);
+  if (n.ferry && root && root.querySelector(".nferry")) {
+    const r = await stopRoutes(n.ferry.id), names = r.map(x => x.long_name);
+    if (names.length && root.querySelector(".nferry")) root.querySelector(".nferry").innerHTML = esc(n.ferry.name) + sub(names.map(esc).join(", "));
+  }
+}
+async function fillStopRoutes(p, root) { // bus stop / ferry stop popups: name the lines
+  const el = root && root.querySelector(".rts"); if (!el) return;
+  const r = await stopRoutes(p.id), names = r.map(x => p.lines === "|Bus|" ? (x.short_name || x.long_name) : x.long_name);
+  if (names.length && root.querySelector(".rts")) root.querySelector(".rts").textContent = (p.lines === "|Bus|" ? "Routes " : "") + names.slice(0, 10).join(", ") + (names.length > 10 ? "…" : "");
 }
 let bikeStatusCache = null;
 async function loadBikeStatus(stationId, el) {
@@ -765,7 +853,8 @@ map.on("click", e => {
   if (f.layer.id === "members") selectMember(f);
   popup.setLngLat(f.geometry.coordinates).setHTML(html).addTo(map);
   const el = popup.getElement() && popup.getElement().querySelector(".next");
-  if (f.layer.id === "members") loadNearestBus(p, f.geometry.coordinates, popup.getElement());
+  if (f.layer.id === "members") fillMemberPopup(p, popup.getElement());
+  else if (f.layer.id !== "bike") fillStopRoutes(p, popup.getElement());
   if (el && f.layer.id === "bike") loadBikeStatus(p.station_id, el);
   else if (el && f.layer.id !== "members") loadNext(p.id, el);
 });
@@ -777,7 +866,8 @@ CLICKABLE.forEach(id => {
 /* sidebar */
 function updateStats() {
   const shown = shownFeatures();
-  $("s-count").textContent = shown.length + " / " + members.features.length;
+  $("s-count").textContent = shown.length === members.features.length ? shown.length : shown.length + " of " + members.features.length;
+  renderAccess();
   if (state.unlocked) {
     $("d-total").textContent = fmt$(shown.reduce((a, f) => a + (f.properties.billed || 0), 0));
     $("d-count").textContent = shown.length + " / " + members.features.length;
@@ -793,12 +883,12 @@ function buildColorLegend() {
   const used = new Set(members.features.map(f => f.properties[state.colorBy]));
   $("color-legend").innerHTML = state.colorBy === "status" ? "" :
     Object.entries(table).filter(([k]) => used.has(k)).map(([k, c]) =>
-      `<label class="row" style="cursor:default"><span class="sw" style="background:${c}"></span><span class="grow">${esc(k)}</span></label>`).join("");
+      `<label class="row" style="cursor:default"><span class="sw sq" style="background:${c}"></span><span class="grow">${esc(k)}</span></label>`).join("");
 }
 function setPaint() {
   if (!map.getLayer("members")) return;
-  map.setPaintProperty("members", "circle-color", colorExpr());
-  map.setPaintProperty("members", "circle-radius", radiusExpr());
+  map.setLayoutProperty("members", "icon-image", iconExpr());
+  map.setLayoutProperty("members", "icon-size", sizeExpr());
   buildColorLegend();
 }
 function buildStatusList() {
@@ -806,7 +896,7 @@ function buildStatusList() {
   members.features.forEach(f => { const p = f.properties; (agg[p.status] = agg[p.status] || { n:0, $:0 }); agg[p.status].n++; agg[p.status].$ += p.billed || 0; });
   const order = Object.keys(STATUS_COLORS).filter(s => agg[s]);
   el.innerHTML = order.map(s => `<label class="row"><input type="checkbox" data-status="${esc(s)}" checked>
-      <span class="sw" style="background:${STATUS_COLORS[s]}"></span><span class="grow">${esc(s)}</span>
+      <span class="sw sq" style="background:${STATUS_COLORS[s]}"></span><span class="grow">${esc(s)}</span>
       <span class="num">${agg[s].n} &middot; ${fmt$(agg[s].$)}</span></label>`).join("");
   el.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => {
     cb.checked ? state.statuses.add(cb.dataset.status) : state.statuses.delete(cb.dataset.status);
@@ -825,9 +915,6 @@ async function unlockDues() {
     state.unlocked = true;
     state.statuses = new Set(members.features.map(f => f.properties.status));
     map.getSource("members").setData(members);
-    $("colorBy").insertAdjacentHTML("afterbegin", '<option value="status">Dues status</option>');
-    $("sizeBy").insertAdjacentHTML("beforeend", '<option value="billed">2027 dues $</option>');
-    $("rowColor").hidden = false; $("rowSize").hidden = false;
     $("colorBy").value = "status"; state.colorBy = "status";
     buildStatusList(); setPaint(); applyFilter();
     $("dues-locked").hidden = true; $("dues-open").hidden = false;
@@ -851,24 +938,17 @@ $("basemap").onchange = e => { state.basemap = e.target.value; map.setStyle(CONF
 
 /* load data */
 function pushSources() {
-  [["rtLines","rtLines"],["crLines","crLines"],["ferryLines","ferryLines"],["ferry","ferry"],["busLines","busLines"],["rapid","rapid"],["cr","cr"],["bike","bike"]]
+  [["rtLines","rtLines"],["crLines","crLines"],["ferryLines","ferryLines"],["ferry","ferry"],["busLines","busLines"],["busStops","busStops"],["rapid","rapid"],["cr","cr"],["bike","bike"]]
     .forEach(([s, k]) => map.getSource(s) && map.getSource(s).setData(data[k]));
 }
-function computeNearest() {
+function computeNearest() { // nearest names for the member popup (straight-line is fine for picking a name)
   const subway = data.rapid.features.filter(f => SUBWAY_LINES.some(l => f.properties.lines.indexOf("|" + l + "|") >= 0));
-  const bikes = data.bike.features;
-  if (!subway.length || !bikes.length) return;
-  let rapid800 = 0, bike400 = 0; /* names kept from earlier thresholds; now 500 m and 250 m */
   members.features.forEach(f => {
     const c = f.geometry.coordinates;
-    const best = pts => pts.reduce((b, s) => { const m = haversine(c, s.geometry.coordinates); return m < b.m ? { m, name: s.properties.name } : b; }, { m: Infinity, name: "" });
-    const r = best(subway), b = best(bikes);
-    nearest[f.properties.org_id] = { rapid:r, bike:b };
-    if (r.m <= NEAR.subway) rapid800++;
-    if (b.m <= NEAR.bike) bike400++;
+    const best = (pts, maxM = Infinity) => { let b = null, bm = maxM;
+      pts.forEach(s => { const m = haversine(c, s.geometry.coordinates); if (m < bm) { bm = m; b = { m, id:s.properties.id, name:s.properties.name }; } }); return b; };
+    nearest[f.properties.org_id] = { rapid:best(subway), bike:best(data.bike.features), bus:best(data.busStops.features), ferry:best(data.ferry.features, 2000) };
   });
-  $("s-rapid").textContent = rapid800 + " / " + members.features.length;
-  $("s-bike").textContent  = bike400 + " / " + members.features.length;
 }
 async function loadContext() {
   const jobs = [
@@ -877,6 +957,7 @@ async function loadContext() {
       data.crLines = { type:"FeatureCollection", features:t.crLines };
       data.rapid = stationFC(t.rtStations); data.cr = stationFC(t.crStations);
     }),
+    cached("abc-mbta-busstops-v1", fetchBusStops).then(r => { data.busStops = busStopsFC(r); }),
     cached("abc-mbta-ferry-v1", fetchFerry).then(f => { data.ferryLines = { type:"FeatureCollection", features:f.lines }; data.ferry = stationFC(f.stops); }),
     getJSON(CONFIG.bluebikes.info).then(g => {
       data.bike = { type:"FeatureCollection", features:g.data.stations.map(s => ({ type:"Feature", geometry:{ type:"Point", coordinates:[s.lon, s.lat] },
@@ -888,6 +969,7 @@ async function loadContext() {
   results.filter(r => r.status === "rejected").forEach(r => console.warn("Layer failed to load:", r.reason));
   pushSources();
   computeNearest();
+  computeAccess();
 }
 
 /* init */
@@ -895,7 +977,6 @@ buildTree();
 buildColorLegend();
 drawNetLegend();
 updateStats();
-map.on("moveend", loadBusStops);
 map.once("load", () => {
   const b = new maplibregl.LngLatBounds();
   members.features.forEach(f => b.extend(f.geometry.coordinates));
