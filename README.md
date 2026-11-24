@@ -65,7 +65,7 @@ browser only after the correct password is entered. Without it, `dues.enc.js` is
 DUES_PASSWORD='your passphrase' python3 scripts/build_members_geojson.py
 ```
 
-Requires `pip install cryptography`. The script keeps `dues.enc.js` untouched when the dues have not changed.
+Requires `pip install cryptography`. The script keeps `dues.enc.js` untouched when the dues have not changed, and `data/meta.js` (the "last updated" date in the glossary) only changes when the data does.
 
 ## Extending it
 

@@ -72,7 +72,8 @@
   #gloss table { border-collapse:collapse; width:100%; margin:2px 0 6px; }
   #gloss td { padding:1px 0; } #gloss td:last-child { text-align:right; color:var(--muted); }
   #gloss .g { font-weight:600; padding-top:5px; }
-  #gloss p { margin:3px 0; color:var(--muted); }
+  #gloss p { margin:4px 0; color:var(--muted); }
+  #gloss p b { color:var(--ink); font-weight:600; }
   #netStatus { font-size:12px; color:var(--ink); margin:4px 0; min-height:17px; }
   .next .dir { font-weight:600; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; margin:6px 0 1px; color:var(--ink); }
   @media (max-width: 640px) { #panel { width:auto; right:12px; bottom:auto; max-height:46%; } }
@@ -104,7 +105,16 @@
       <tr><td>1 km</td><td>0.62 mi</td></tr>
     </table>
     <p>Distances follow streets and paths, not straight lines. The bike network uses any street, path or cycleway open to bikes.</p>
-    <p>Data: MBTA, Bluebikes, MAPC, OpenStreetMap, CARTO.</p>
+    <table>
+      <tr><td class="g" colspan="2">Data sources</td></tr>
+    </table>
+    <p><b>Organizations:</b> Airtable (ABC TMA base), 2027 Dues and Organizations tables. Last updated <span id="gUpdated">–</span>; refreshed automatically every 6 hours.</p>
+    <p><b>Routes, stops and stations:</b> MBTA V3 API (GTFS schedule data) for subway, Silver Line, commuter rail, bus and ferry. Saved in your browser for up to 24 hours.</p>
+    <p><b>Next departures:</b> MBTA V3 API (GTFS-realtime predictions), live.</p>
+    <p><b>Bluebikes:</b> Bluebikes GBFS feeds. Station names and docks from station_information; bikes and open docks from station_status, live.</p>
+    <p><b>Bike lanes, shared-use paths, walking trails:</b> MAPC AllTrails map service (existing facilities).</p>
+    <p><b>Walk and bike networks:</b> OpenStreetMap street data (Geofabrik Massachusetts extract)<span id="gNet"></span>.</p>
+    <p><b>Basemap:</b> CARTO Positron and Dark Matter, &copy; OpenStreetMap contributors. Map software: MapLibre GL JS.</p>
   </div>
 
   <div class="stat one"><b id="s-count">–</b><span id="s-label">Organizations</span></div>
@@ -164,6 +174,7 @@
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="data/members.js"></script>
 <script src="data/dues.enc.js" onerror="void 0"></script>
+<script src="data/meta.js" onerror="void 0"></script>
 <script>
 /* CONFIG: every external layer is declared here. */
 const CONFIG = {
@@ -570,6 +581,7 @@ function buildGraph(j) {
   for (let i = 0; i < n; i++) { G.lon[i] = j.nodes[2*i] / S; G.lat[i] = j.nodes[2*i + 1] / S; }
   for (let e = 0; e < N; e++) { G.ea[e] = j.edges[5*e]; G.eb[e] = j.edges[5*e + 1]; G.el[e] = j.edges[5*e + 2]; G.em[e] = j.edges[5*e + 3]; G.es[e] = j.edges[5*e + 4]; }
   NET.G = G; NET.adj = {}; NET.cache = {};
+  if (j.built) { const g = document.getElementById("gNet"); if (g) g.textContent = ", built " + fmtDay(j.built); }
   return G;
 }
 function adjacency(mode) { // CSR adjacency for one mode + connected components (to avoid snapping to isolated fragments)
@@ -749,6 +761,8 @@ document.querySelectorAll("#accTime button").forEach(b => b.addEventListener("cl
   document.querySelectorAll("#accTime button").forEach(x => x.classList.toggle("on", x === b));
   renderAccess();
 }));
+const fmtDay = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric", timeZone:"UTC" }) : "";
+$("gUpdated").textContent = fmtDay(window.DATA_UPDATED) || "unknown";
 $("infoBtn").onclick = () => { $("gloss").hidden = !$("gloss").hidden; };
 
 /* popups and clicks */
@@ -766,7 +780,8 @@ function memberHTML(p) {
     rows.push(["2027 dues", p.billed && p.billed !== "null" ? fmt$(p.billed) : "–"]);
   }
   rows.push(["Sector", esc(p.sector)], ["TMA", esc(p.tma)]);
-  rows.push(["Nearest subway", n.rapid ? esc(n.rapid.name) : "…"]);
+  const subLines = n.rapid ? n.rapid.lines.split("|").filter(l => SUBWAY_LINES.indexOf(l) >= 0).map(l => RT_NAMES[l]).join(", ") : "";
+  rows.push(["Nearest subway", n.rapid ? esc(n.rapid.name) + `<br><span style="color:#6b7684">${esc(subLines)}</span>` : "…"]);
   rows.push(["Nearest bus stop", `<span class="nbus">${n.bus ? esc(n.bus.name) : "…"}</span>`]);
   rows.push(["Nearest Bluebikes", n.bike ? esc(n.bike.name) : "…"]);
   if (n.ferry) rows.push(["Nearest ferry", `<span class="nferry">${esc(n.ferry.name)}</span>`]);
@@ -946,7 +961,7 @@ function computeNearest() { // nearest names for the member popup (straight-line
   members.features.forEach(f => {
     const c = f.geometry.coordinates;
     const best = (pts, maxM = Infinity) => { let b = null, bm = maxM;
-      pts.forEach(s => { const m = haversine(c, s.geometry.coordinates); if (m < bm) { bm = m; b = { m, id:s.properties.id, name:s.properties.name }; } }); return b; };
+      pts.forEach(s => { const m = haversine(c, s.geometry.coordinates); if (m < bm) { bm = m; b = { m, id:s.properties.id, name:s.properties.name, lines:s.properties.lines }; } }); return b; };
     nearest[f.properties.org_id] = { rapid:best(subway), bike:best(data.bike.features), bus:best(data.busStops.features), ferry:best(data.ferry.features, 2000) };
   });
 }

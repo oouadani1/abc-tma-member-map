@@ -15,11 +15,14 @@ written to any file. Without dues_private.csv the encrypted file is skipped.
 Usage
   DUES_PASSWORD='...' python3 scripts/build_members_geojson.py
 """
+import atexit
 import base64
 import csv
+import hashlib
 import getpass
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes
@@ -29,6 +32,25 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 ITERATIONS = 600_000
+
+
+def _fingerprint():
+    out = []
+    for name in ("members.js", "dues.enc.js"):
+        f = DATA / name
+        out.append(hashlib.sha256(f.read_bytes()).hexdigest() if f.exists() else "")
+    return out
+
+
+_before = _fingerprint()
+
+
+@atexit.register
+def _stamp_updated():
+    """data/meta.js holds the 'last updated' date shown in the map's glossary; it changes only when the data files change."""
+    meta = DATA / "meta.js"
+    if _fingerprint() != _before or not meta.exists():
+        meta.write_text(f'window.DATA_UPDATED = "{datetime.now(timezone.utc).date().isoformat()}";\n', encoding="utf-8")
 
 
 def num(v):

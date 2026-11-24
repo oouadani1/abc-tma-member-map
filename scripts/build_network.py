@@ -21,6 +21,7 @@ import math
 import re
 import sys
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -148,7 +149,7 @@ def build(nodes, ways):
                     flat.extend([round(nodes[r][0] * SCALE), round(nodes[r][1] * SCALE)])
                 shapes.append(flat)
             edges.extend([nid(seg[0]), nid(seg[-1]), max(1, round(length)), m, si])
-    return {"v": 1, "scale": SCALE, "nodes": out_nodes, "edges": edges, "shapes": shapes}
+    return {"v": 1, "built": date.today().isoformat(), "scale": SCALE, "nodes": out_nodes, "edges": edges, "shapes": shapes}
 
 
 def main(argv):
