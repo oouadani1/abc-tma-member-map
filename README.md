@@ -12,10 +12,11 @@ Double-click `index.html`, or serve the folder (`python3 -m http.server`). For h
 
 | Layer | Source |
 |---|---|
-| Members (62), colored by sector or TMA, sized by sq ft | `data/members.js` (public fields only) |
+| Members (62), colored by sector (Airtable's sector colors) | `data/members.js` (public fields only) |
 | Dues status / amounts (unlock with password) | `data/dues.enc.js` (encrypted) |
 | MBTA rapid transit lines (Red, Orange, Blue, Green B-E, Mattapan, Silver SL1-SL5/SLW) | MBTA V3 API canonical route patterns and shapes (live, cached 24 h in the browser) |
 | MBTA Commuter Rail ("Purple Line") lines and stations | MBTA V3 API (live) |
+| MBTA Ferry (default off) | MBTA V3 API |
 | MBTA Bus (default off; routes at zoom 11.5+, stops load on demand at zoom 15+) | MBTA V3 API |
 | Station and bus stop popups: next two departures per line, grouped by direction | MBTA V3 `/predictions` (live) |
 | Bluebikes stations (name, docks, live bikes and open docks on click) | Bluebikes GBFS (live) |
@@ -23,15 +24,14 @@ Double-click `index.html`, or serve the folder (`python3 -m http.server`). For h
 | Walk / bike network view (5, 10, 15 min) for a clicked member | `data/network.json` (OpenStreetMap street graph, see below) |
 | Basemap | CARTO Positron / Dark Matter via MapLibre GL JS |
 
-Transit toggles are nested: MBTA Rapid Transit > each line, Commuter Rail > each line, Bus > each tier. Parent checkboxes switch their
+Transit toggles are nested: MBTA Transit > Subway & Silver Line / Commuter Rail / Bus / Ferry > individual lines. Parent checkboxes switch their
 children on or off and show a partial state when only some are on. Popups on members show nearest rapid transit and Bluebikes station
-(straight-line meters). The panel counts members within 800 m of a subway station and 400 m of Bluebikes (straight-line).
+(straight-line meters). The panel counts members within 500 m of a subway station and 250 m of a Bluebikes station (straight-line; 80 m is about a minute of walking). The member popup also lists the nearest bus stop and the routes serving it.
 
 ## Network view (walk / bike)
 
-Clicking a member highlights the streets and paths reachable within 5, 10 or 15 minutes (walk 4.8 km/h, bike 15 km/h), glowing and banded by
-time. Shortest paths run in the browser on `data/network.json`, a compact street graph from OpenStreetMap (study area = members + 3.9 km).
-One-way streets are ignored, so bike reach is slightly optimistic.
+Clicking a member highlights the streets and paths reachable within 5, 10 or 15 minutes (walk 4.8 km/h, bike 15 km/h) in one solid color. Shortest paths run in the browser on `data/network.json`, a compact street graph from OpenStreetMap (study area = members + 3.9 km).
+The bike network uses any street, path or cycleway that allows bikes, not only marked bike lanes. One-way streets are ignored, so bike reach is slightly optimistic.
 
 Build or refresh the graph: GitHub > Actions > **Build street network** > Run workflow. It downloads the Massachusetts OSM extract, cuts
 the study area, runs `scripts/build_network.py`, and commits `data/network.json`. Re-run it if members are added far outside the current area.
