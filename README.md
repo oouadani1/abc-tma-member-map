@@ -14,13 +14,18 @@ Double-click `index.html`, or serve the folder (`python3 -m http.server`). For h
 |---|---|
 | Members (62), colored by sector or TMA, sized by sq ft | `data/members.js` (public fields only) |
 | Dues status / amounts (unlock with password) | `data/dues.enc.js` (encrypted) |
-| MBTA rapid transit + commuter rail stations | MassGIS/MBTA files in the `ma-bikeshare-coverage` repo (live from GitHub) |
-| MBTA rapid transit lines | MBTA V3 API `/shapes` (live) |
-| Bluebikes stations | Bluebikes GBFS (live) |
+| MBTA rapid transit lines (Red, Orange, Blue, Green B-E, Mattapan, Silver SL1-SL5/SLW) | MBTA V3 API canonical route patterns and shapes (live, cached 24 h in the browser) |
+| MBTA Commuter Rail ("Purple Line") lines and stations | MBTA V3 API (live) |
+| MBTA Bus (default off, loads on first toggle; frequent / local / other) | MBTA V3 API |
+| Station popups with next two departures per line and direction | MBTA V3 `/predictions` (live) |
+| Bluebikes stations (name, docks, live bikes and open docks on click) | Bluebikes GBFS (live) |
+| Bike lanes, shared-use paths, walking trails | MAPC AllTrails map service (image overlay) |
 | Basemap | CARTO Positron / Dark Matter via MapLibre GL JS |
 
-Popups show nearest rapid transit station and nearest Bluebikes station (straight-line meters). The panel counts members within
-800 m of rapid transit and 400 m of Bluebikes. Walkshed rings are plain circles, not street-network walksheds.
+Transit toggles are nested: MBTA Rapid Transit > each line, Commuter Rail > each line, Bus > each tier. Parent checkboxes switch their
+children on or off and show a partial state when only some are on. Popups on members show nearest rapid transit and Bluebikes station
+(straight-line meters). The panel counts members within 800 m of a subway station and 400 m of Bluebikes. Walkshed rings are plain circles,
+not street-network walksheds.
 
 ## How the dues protection works
 
@@ -45,11 +50,11 @@ This regenerates `members.geojson` (for GIS tools; public fields only), `members
 
 ## Extending it
 
-All external layers are entries in the `CONFIG` block in `index.html`, each a MapLibre source + layer in `addAllLayers()`. To add a layer
-(GTFS stops/routes, congestion, TAPA status, bus stops), add a URL to `CONFIG.sources`, fetch it in `loadContext()`, and add a source and
-layer. Members carry `org_id` (Airtable record ID) so other tables can be joined on it.
+External layers are declared in the `CONFIG` block and the `TREE` toggle structure in `index.html`; each is a MapLibre source + layer in
+`addAllLayers()`. To add a layer (congestion, TAPA status, etc.), add its config, load it in `loadContext()`, and add a source and layer.
+Members carry `org_id` (Airtable record ID) so other tables can be joined on it.
 
 ## Notes
 
 - The page asks search engines not to index it (`noindex`), but that is not access control.
-- Layers read from GitHub, MBTA and Bluebikes need internet access. To work offline, save those files into `data/` and point `CONFIG.sources` at them.
+- MBTA, Bluebikes and MAPC layers need internet access. The MBTA API is rate limited for anonymous use; the page caches routes and stations in the browser for 24 hours.
