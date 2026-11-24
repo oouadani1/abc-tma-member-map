@@ -1,7 +1,7 @@
 """Build the map's data files.
 
 Inputs
-  data/members.csv       public member fields (name, address, lat/lng, sector, TMA, sq ft)
+  data/members.csv       public member fields (name, address, lat/lng, sector, TMA)
   data/dues_private.csv  org_id, status, billed   (NOT committed; see .gitignore)
 
 Outputs
@@ -20,7 +20,6 @@ import csv
 import getpass
 import json
 import os
-from datetime import date
 from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes
@@ -54,17 +53,12 @@ with open(DATA / "members.csv", newline="", encoding="utf-8") as f:
                 "city": r["city"],
                 "sector": r["sector"],
                 "tma": r["tma"],
-                "sqft": num(r["sqft"]),
-                "sqft_tier": r["sqft_tier"] or None,
             },
         })
 
 fc = {"type": "FeatureCollection", "features": features}
 (DATA / "members.geojson").write_text(json.dumps(fc, indent=1), encoding="utf-8")
-(DATA / "members.js").write_text(
-    f'window.MEMBERS_SNAPSHOT = "{date.today().isoformat()}";\nwindow.MEMBERS = {json.dumps(fc, separators=(",", ":"))};\n',
-    encoding="utf-8",
-)
+(DATA / "members.js").write_text(f'window.MEMBERS = {json.dumps(fc, separators=(",", ":"))};\n', encoding="utf-8")
 print(f"members: {len(features)} (public fields only)")
 
 # ---- encrypted dues ----
@@ -85,6 +79,21 @@ if missing:
 password = os.environ.get("DUES_PASSWORD") or getpass.getpass("Dues password: ")
 if len(password) < 12:
     raise SystemExit("Use a password of at least 12 characters.")
+
+def unchanged(path, password, dues):
+    """True when the existing encrypted file already holds exactly these dues (avoids a new commit on every run)."""
+    try:
+        blob = json.loads(path.read_text(encoding="utf-8").split("=", 1)[1].strip().rstrip(";"))
+        k = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=base64.b64decode(blob["salt"]), iterations=blob["iter"]).derive(password.encode("utf-8"))
+        return json.loads(AESGCM(k).decrypt(base64.b64decode(blob["iv"]), base64.b64decode(blob["ct"]), None)) == dues
+    except Exception:
+        return False
+
+
+target = DATA / "dues.enc.js"
+if target.exists() and unchanged(target, password, dues):
+    print(f"dues: {len(dues)} records, unchanged (dues.enc.js kept)")
+    raise SystemExit(0)
 
 salt, iv = os.urandom(16), os.urandom(12)
 key = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=ITERATIONS).derive(password.encode("utf-8"))

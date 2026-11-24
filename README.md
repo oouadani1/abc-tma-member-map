@@ -52,13 +52,20 @@ browser only after the correct password is entered. Without it, `dues.enc.js` is
 
 ## Refresh the data
 
-Edit `data/members.csv` (public fields) and `data/dues_private.csv` (org_id, status, billed), then:
+**Automatic (Airtable):** the *Sync from Airtable* GitHub Action runs every 6 hours (and on demand from the Actions tab). It reads the
+2027 Dues table and the Organizations table (read-only), rebuilds `members.csv`, `members.js`, `members.geojson` and the encrypted
+`dues.enc.js`, and commits only if something changed. Setup: create a read-only Airtable token and add two repository secrets,
+`AIRTABLE_TOKEN` and `DUES_PASSWORD` (Settings > Secrets and variables > Actions). An organization appears on the map when it has a
+2027 Dues record and a Latitude/Longitude on its Organizations record; warnings in the run log list any that are skipped.
+`scripts/sync_airtable.py` has the field IDs it reads; to change the dues year set `DUES_YEAR`.
+
+**Manual:** edit `data/members.csv` (org_id, name, address, city, lat, lng, sector, tma) and `data/dues_private.csv` (org_id, status, billed), then:
 
 ```
 DUES_PASSWORD='your passphrase' python3 scripts/build_members_geojson.py
 ```
 
-This regenerates `members.geojson` (for GIS tools; public fields only), `members.js`, and `dues.enc.js`. Requires `pip install cryptography`.
+Requires `pip install cryptography`. The script keeps `dues.enc.js` untouched when the dues have not changed.
 
 ## Extending it
 

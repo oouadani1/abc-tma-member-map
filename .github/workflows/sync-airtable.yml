@@ -1,0 +1,50 @@
+name: Sync from Airtable
+
+# Refreshes the map's member data (locations, sector, TMA, and the encrypted dues) from Airtable.
+# Runs every 6 hours, and on demand: Actions > Sync from Airtable > Run workflow.
+# Needs two repository secrets: AIRTABLE_TOKEN (read-only token) and DUES_PASSWORD (the map's dues password).
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-airtable
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install cryptography
+
+      - name: Pull from Airtable (read-only)
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+        run: python scripts/sync_airtable.py
+
+      - name: Rebuild map data (dues are encrypted here)
+        env:
+          DUES_PASSWORD: ${{ secrets.DUES_PASSWORD }}
+        run: python scripts/build_members_geojson.py
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/members.csv data/members.geojson data/members.js data/dues.enc.js
+          if git diff --cached --quiet; then echo "No changes"; else
+            git commit -m "Sync member data from Airtable"
+            git pull --rebase
+            git push
+          fi
