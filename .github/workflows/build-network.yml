@@ -1,0 +1,43 @@
+name: Build street network
+
+# Builds data/network.json (walk/bike street graph) from OpenStreetMap for the map's network view.
+# Run it by hand: Actions > Build street network > Run workflow. Re-run any time to refresh OSM data.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/build_network.py
+      - .github/workflows/build-network.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install osmium
+        run: sudo apt-get update && sudo apt-get install -y osmium-tool
+
+      - name: Download Massachusetts OSM extract (Geofabrik)
+        run: curl -L --fail --retry 3 -o ma.osm.pbf https://download.geofabrik.de/north-america/us/massachusetts-latest.osm.pbf
+
+      - name: Cut study area and keep highways
+        run: |
+          BBOX=$(python3 scripts/build_network.py --bbox)
+          echo "Study area: $BBOX"
+          osmium extract -b "$BBOX" ma.osm.pbf -o area.osm.pbf
+          osmium tags-filter area.osm.pbf w/highway -o roads.osm.pbf
+          osmium cat roads.osm.pbf -f opl,add_metadata=false -o roads.opl
+
+      - name: Build graph
+        run: python3 scripts/build_network.py roads.opl data/network.json
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/network.json
+          git diff --cached --quiet || (git commit -m "Update street network from OpenStreetMap" && git push)

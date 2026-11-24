@@ -16,16 +16,25 @@ Double-click `index.html`, or serve the folder (`python3 -m http.server`). For h
 | Dues status / amounts (unlock with password) | `data/dues.enc.js` (encrypted) |
 | MBTA rapid transit lines (Red, Orange, Blue, Green B-E, Mattapan, Silver SL1-SL5/SLW) | MBTA V3 API canonical route patterns and shapes (live, cached 24 h in the browser) |
 | MBTA Commuter Rail ("Purple Line") lines and stations | MBTA V3 API (live) |
-| MBTA Bus (default off, loads on first toggle; frequent / local / other) | MBTA V3 API |
-| Station popups with next two departures per line and direction | MBTA V3 `/predictions` (live) |
+| MBTA Bus (default off; routes at zoom 11.5+, stops load on demand at zoom 15+) | MBTA V3 API |
+| Station and bus stop popups: next two departures per line, grouped by direction | MBTA V3 `/predictions` (live) |
 | Bluebikes stations (name, docks, live bikes and open docks on click) | Bluebikes GBFS (live) |
-| Bike lanes, shared-use paths, walking trails | MAPC AllTrails map service (image overlay) |
+| Bike lanes (green), shared-use paths (teal), walking trails | MAPC AllTrails map service (image overlay, recolored in the browser) |
+| Walk / bike network view (5, 10, 15 min) for a clicked member | `data/network.json` (OpenStreetMap street graph, see below) |
 | Basemap | CARTO Positron / Dark Matter via MapLibre GL JS |
 
 Transit toggles are nested: MBTA Rapid Transit > each line, Commuter Rail > each line, Bus > each tier. Parent checkboxes switch their
 children on or off and show a partial state when only some are on. Popups on members show nearest rapid transit and Bluebikes station
-(straight-line meters). The panel counts members within 800 m of a subway station and 400 m of Bluebikes. Walkshed rings are plain circles,
-not street-network walksheds.
+(straight-line meters). The panel counts members within 800 m of a subway station and 400 m of Bluebikes (straight-line).
+
+## Network view (walk / bike)
+
+Clicking a member highlights the streets and paths reachable within 5, 10 or 15 minutes (walk 4.8 km/h, bike 15 km/h), glowing and banded by
+time. Shortest paths run in the browser on `data/network.json`, a compact street graph from OpenStreetMap (study area = members + 3.9 km).
+One-way streets are ignored, so bike reach is slightly optimistic.
+
+Build or refresh the graph: GitHub > Actions > **Build street network** > Run workflow. It downloads the Massachusetts OSM extract, cuts
+the study area, runs `scripts/build_network.py`, and commits `data/network.json`. Re-run it if members are added far outside the current area.
 
 ## How the dues protection works
 
