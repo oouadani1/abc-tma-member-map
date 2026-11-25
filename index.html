@@ -14,8 +14,8 @@
   #panel { position:absolute; top:12px; left:12px; bottom:12px; width:330px; overflow:auto; background:var(--card); backdrop-filter: blur(6px);
            border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 24px rgba(20,30,50,.12); padding:14px 14px 10px; z-index:2; }
   h1 { font-size:16px; margin:0 0 2px; letter-spacing:-.01em; }
-  .sub { color:var(--muted); font-size:12px; margin-bottom:10px; }
-  h2 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 6px; font-weight:600; }
+  .sub { color:var(--muted); font-size:12px; margin-bottom:12px; }
+  h2 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:16px 0 8px; font-weight:600; }
   .stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .stat { border:1px solid var(--line); border-radius:8px; padding:6px 8px; background:#fff; }
   .stat b { display:block; font-size:17px; letter-spacing:-.01em; }
@@ -30,7 +30,8 @@
   select, input[type=password] { font:inherit; padding:4px 6px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); }
   button { font:inherit; padding:4px 10px; border:1px solid var(--line); border-radius:6px; background:#f4f6f8; color:var(--ink); cursor:pointer; }
   button:hover { background:#eaeef2; }
-  .ctl { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:3px 0; }
+  .ctl { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 0; }
+  .ctl + .stats { margin-top:8px; }
   .note { color:var(--muted); font-size:11px; margin-top:12px; border-top:1px solid var(--line); padding-top:8px; }
   .prow { display:flex; align-items:center; gap:4px; padding:2px 0; }
   .prow .chev { width:22px; text-align:center; color:var(--ink); cursor:pointer; user-select:none; font-size:17px; line-height:1; padding:2px 0; }
@@ -38,7 +39,7 @@
   .kids { margin-left:20px; border-left:2px solid var(--line); padding-left:8px; }
   .kids.closed { display:none; }
   .busy { color:var(--muted); font-size:11px; padding:2px 0 2px 22px; }
-  details.dues { margin-top:14px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  details.dues { margin-top:16px; border:1px solid var(--line); border-radius:8px; background:#fff; }
   details.dues > summary { cursor:pointer; padding:7px 10px; font-weight:600; font-size:12px; list-style:none; display:flex; justify-content:space-between; }
   details.dues > summary::after { content:"+"; color:var(--muted); }
   details.dues[open] > summary::after { content:"–"; }
@@ -65,6 +66,7 @@
   .seg button.on { background:#1b2430; color:#fff; border-color:#1b2430; }
   .one { display:flex; align-items:baseline; gap:6px; }
   .one b { display:inline; font-size:18px; }
+  .one input { margin:0 2px 0 0; align-self:center; }
   .stat.one span { font-size:13px; color:var(--ink); }
   .stat .lab { display:block; color:var(--muted); font-size:11px; }
   .info { width:20px; height:20px; padding:0; border-radius:50%; font:italic 600 12px Georgia, serif; line-height:18px; margin-left:6px; vertical-align:middle; color:var(--muted); }
@@ -74,7 +76,10 @@
   #gloss .g { font-weight:600; padding-top:5px; }
   #gloss p { margin:4px 0; color:var(--muted); }
   #gloss p b { color:var(--ink); font-weight:600; }
-  #netStatus { font-size:12px; color:var(--ink); margin:4px 0; min-height:17px; }
+  #netStatus { font-size:12px; color:var(--ink); margin:4px 0 8px; min-height:17px; }
+  .next .mode { display:flex; align-items:center; gap:6px; font-weight:700; font-size:12px; margin-top:9px; padding-top:6px; border-top:1px solid var(--line); }
+  .next .h + .mode { border-top:0; padding-top:0; margin-top:4px; }
+  .next .mode i { width:10px; height:10px; border-radius:2px; display:inline-block; }
   .next .dir { font-weight:600; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; margin:6px 0 1px; color:var(--ink); }
   @media (max-width: 640px) { #panel { width:auto; right:12px; bottom:auto; max-height:46%; } }
 </style>
@@ -117,7 +122,7 @@
     <p><b>Basemap:</b> CARTO Positron and Dark Matter, &copy; OpenStreetMap contributors. Map software: MapLibre GL JS.</p>
   </div>
 
-  <div class="stat one"><b id="s-count">–</b><span id="s-label">Organizations</span></div>
+  <label class="stat one" style="cursor:pointer"><input type="checkbox" id="orgToggle" checked title="Show or hide organizations"><b id="s-count">–</b><span id="s-label">Organizations</span></label>
 
   <h2>Within walking distance of</h2>
   <div class="ctl"><span class="seg" id="accTime"><button type="button" data-m="50">50 m</button><button type="button" data-m="250">250 m</button><button type="button" data-m="500" class="on">500 m</button><button type="button" data-m="1000">1,000 m</button></span></div>
@@ -128,12 +133,12 @@
     <div class="stat"><b id="a-bike">…</b><span class="lab">Bluebikes</span></div>
   </div>
 
-  <div id="color-legend" style="margin-top:8px"></div>
+  <div id="color-legend"></div>
 
   <h2>Network view</h2>
   <div class="ctl"><span>Click a member to show</span>
     <select id="netMode"><option value="walk">Walk network</option><option value="bike">Bike network</option><option value="off">Off</option></select></div>
-  <div class="ctl"><span>Travel time</span>
+  <div class="ctl"><span>Travel time (in minutes)</span>
     <span class="seg" id="netTime"><button type="button" data-min="5">5</button><button type="button" data-min="10" class="on">10</button><button type="button" data-min="15">15</button></span></div>
   <div id="netStatus">Click a member property to draw its network.</div>
   <button id="netClear" type="button" hidden>Clear</button>
@@ -385,7 +390,7 @@ const EMPTY = () => ({ type:"FeatureCollection", features:[] });
 const data = { ferryLines:EMPTY(), ferry:EMPTY(), rtLines:EMPTY(), crLines:EMPTY(), busLines:EMPTY(), busStops:EMPTY(), rapid:EMPTY(), cr:EMPTY(), bike:EMPTY(), net:EMPTY(), selected:EMPTY() };
 const nearest = {};
 const leafIds = GROUPS.reduce((a, g) => a.concat(g.children.map(c => c.id)), []);
-const state = { unlocked:false, statuses:new Set(), colorBy:"sector", sizeBy:"fixed",
+const state = { orgs:true, unlocked:false, statuses:new Set(), colorBy:"sector", sizeBy:"fixed",
                 on:new Set(leafIds.filter(id => !DEFAULT_OFF.has(id))),
                 layers:{ bike:true, "mapc-bike":true, "mapc-shared":true, "mapc-walk":false },
                 basemap:"light", busLoaded:false, busLoading:false };
@@ -407,7 +412,7 @@ function addOrgIcons() {
     const g = cv.getContext && cv.getContext("2d"); if (!g) return;
     const r = 7, x = 4, y = 4, w = 28;
     g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + w, r); g.arcTo(x + w, y + w, x, y + w, r); g.arcTo(x, y + w, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
-    g.shadowColor = "rgba(0,0,0,.35)"; g.shadowBlur = 3; g.fillStyle = c; g.fill();
+    g.shadowColor = "rgba(0,0,0,.5)"; g.shadowBlur = 4; g.fillStyle = c; g.fill();
     g.shadowColor = "transparent"; g.lineWidth = 3; g.strokeStyle = "#fff"; g.stroke();
     map.addImage(iconId(c), g.getImageData(0, 0, 36, 36), { pixelRatio:2 });
   });
@@ -420,8 +425,8 @@ function iconExpr() {
   return expr;
 }
 function sizeExpr() {
-  if (state.sizeBy === "billed") return ["interpolate", ["linear"], ["coalesce", ["get","billed"], 0], 0, 0.7, 3850, 1, 8750, 1.45, 14750, 2.1];
-  return 1;
+  if (state.sizeBy === "billed") return ["interpolate", ["linear"], ["coalesce", ["get","billed"], 0], 0, 0.85, 3850, 1.25, 8750, 1.8, 14750, 2.6];
+  return 1.25;
 }
 function activeFilter() { // null (no filter) until dues are unlocked and a status is switched off
   if (!state.unlocked) return null;
@@ -466,23 +471,23 @@ function addAllLayers() {
     paint:{ "line-color":["match", ["get","grp"], "Red", RT_COLORS.Red, "Orange", RT_COLORS.Orange, "Blue", RT_COLORS.Blue, "Green", RT_COLORS.Green, "Mattapan", RT_COLORS.Mattapan, RT_COLORS.Silver],
             "line-width":["interpolate",["linear"],["zoom"],9,2,14,5.5], "line-opacity":1 } });
   map.addLayer({ id:"bus-stops", type:"circle", source:"busStops", minzoom:BUS_STOP_ZOOM,
-    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],BUS_STOP_ZOOM,3,18,6.5], "circle-color":BUS_TIERS["bus-frequent"].color, "circle-stroke-color":"#fff", "circle-stroke-width":1.2 } });
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],BUS_STOP_ZOOM,2.5,18,5], "circle-color":BUS_TIERS["bus-frequent"].color, "circle-stroke-color":"#fff", "circle-stroke-width":1 } });
   map.addLayer({ id:"cr", type:"circle", source:"cr",
-    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],8,2,14,6], "circle-color":CR_COLOR, "circle-stroke-color":"#fff", "circle-stroke-width":1 } });
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],8,1.5,14,4], "circle-color":CR_COLOR, "circle-stroke-color":"#fff", "circle-stroke-width":0.8 } });
   map.addLayer({ id:"ferry", type:"circle", source:"ferry", layout:{ visibility:"none" },
-    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,3,14,6], "circle-color":"#fff", "circle-stroke-color":FERRY_COLOR, "circle-stroke-width":2 } });
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2.5,14,4.5], "circle-color":"#fff", "circle-stroke-color":FERRY_COLOR, "circle-stroke-width":1.5 } });
   map.addLayer({ id:"rapid", type:"circle", source:"rapid",
-    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,3,14,7], "circle-color":"#fff", "circle-stroke-color":["get","color"], "circle-stroke-width":["interpolate",["linear"],["zoom"],9,1.5,14,2.5] } });
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2.5,14,5], "circle-color":"#fff", "circle-stroke-color":["get","color"], "circle-stroke-width":["interpolate",["linear"],["zoom"],9,1.2,14,2] } });
   map.addLayer({ id:"bike", type:"circle", source:"bike", layout:{ visibility:vis("bike") },
-    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,2,14,5], "circle-color":"#2b8cbe", "circle-opacity":0.85, "circle-stroke-color":"#fff", "circle-stroke-width":0.8 } });
+    paint:{ "circle-radius":["interpolate",["linear"],["zoom"],9,1.5,14,3.5], "circle-color":"#2b8cbe", "circle-opacity":0.85, "circle-stroke-color":"#fff", "circle-stroke-width":0.8 } });
   map.addLayer({ id:"selected-ring", type:"circle", source:"selected",
     paint:{ "circle-radius":15, "circle-color":"rgba(0,0,0,0)", "circle-stroke-color":nc, "circle-stroke-width":3, "circle-stroke-opacity":0.9 } });
   addOrgIcons();
   map.addLayer({ id:"members", type:"symbol", source:"members",
-    layout:{ "icon-image":iconExpr(), "icon-size":sizeExpr(), "icon-allow-overlap":true, "icon-ignore-placement":true },
+    layout:{ "icon-image":iconExpr(), "icon-size":sizeExpr(), "icon-allow-overlap":true, "icon-ignore-placement":true, visibility: state.orgs ? "visible" : "none" },
     paint:{ "icon-opacity":0.95 } });
   map.addLayer({ id:"members-label", type:"symbol", source:"members", minzoom:13.2,
-    layout:{ "text-field":["get","name"], "text-font":["Noto Sans Regular"], "text-size":11, "text-offset":[0,1.3], "text-anchor":"top", "text-optional":true },
+    layout:{ visibility: state.orgs ? "visible" : "none", "text-field":["get","name"], "text-font":["Noto Sans Regular"], "text-size":11, "text-offset":[0,1.3], "text-anchor":"top", "text-optional":true },
     paint:{ "text-color": state.basemap === "dark" ? "#e8edf3" : "#1b2430", "text-halo-color": state.basemap === "dark" ? "#111" : "#fff", "text-halo-width":1.2 } });
   applyFilter();
   applyTransit();
@@ -717,6 +722,7 @@ function selectMember(f) {
 function clearNetwork() { NET.sel = null; setSource("selected", EMPTY()); showNetwork(); }
 $("netMode").onchange = e => { NET.mode = e.target.value; showNetwork(); };
 $("netClear").onclick = clearNetwork;
+$("orgToggle").onchange = e => { state.orgs = e.target.checked; setVis("members", state.orgs); setVis("members-label", state.orgs); };
 document.querySelectorAll("#netTime button").forEach(b => b.addEventListener("click", () => {
   NET.min = +b.dataset.min;
   document.querySelectorAll("#netTime button").forEach(x => x.classList.toggle("on", x === b));
@@ -789,7 +795,7 @@ function memberHTML(p) {
 }
 function stationHTML(p) {
   const rts = p.lines === "|Bus|" || p.lines === "|Ferry|" ? '<div class="addr rts" style="margin:0 0 2px"></div>' : "";
-  return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">${linesBadges(p.lines)}</div>${rts}<div class="next">Loading next trains…</div></div>`;
+  return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr eb">${linesBadges(p.lines)}</div>${rts}<div class="next">Loading next trains…</div></div>`;
 }
 function bikeHTML(p) {
   return `<div class="pop"><h3>${esc(p.name)}</h3><div class="addr">Bluebikes station${p.short_name ? " &middot; " + esc(p.short_name) : ""}</div>
@@ -798,7 +804,20 @@ function bikeHTML(p) {
 
 const mins = ms => ms < 45000 ? "Now" : Math.round(ms / 60000) + " min";
 const dirRank = n => /^inbound/i.test(n) ? 0 : /^outbound/i.test(n) ? 1 : 2;
-function groupDepartures(j, now) { // -> [{ dir, rows:[{ label, head, times }] }], Inbound first
+const RT_ORDER = ["Red", "Orange", "Blue", "Green", "Mattapan"];
+function modeOf(id, type) { // which mode a route belongs to: a subway line, Silver Line, Commuter Rail, Ferry or Bus
+  if (type === 2) return { name:"Commuter Rail", color:CR_COLOR, rank:60 };
+  if (type === 4) return { name:"Ferry", color:FERRY_COLOR, rank:70 };
+  if (type === 3) return SILVER_IDS.split(",").indexOf(id) >= 0 ? { name:"Silver Line", color:RT_COLORS.Silver, rank:50 } : { name:"Bus", color:BUS_TIERS["bus-frequent"].color, rank:80 };
+  const g = routeGroup(id);
+  return { name:RT_NAMES[g] || g, color:RT_COLORS[g] || "#555", rank:Math.max(0, RT_ORDER.indexOf(g)) };
+}
+function modeBadges(routes) { // one badge per mode serving a stop
+  const seen = new Map();
+  routes.forEach(r => { const m = modeOf(r.id, r.type); seen.set(m.name, m); });
+  return [...seen.values()].sort((a, b) => a.rank - b.rank).map(m => `<span class="badge" style="background:${m.color}">${esc(m.name)}</span>`).join("");
+}
+function groupDepartures(j, now) { // -> [{ mode, color, dirs:[{ dir, rows:[{ label, head, times }] }] }], grouped by mode, then direction
   const inc = {}; (j.included || []).forEach(i => { inc[i.type + ":" + i.id] = i; });
   const groups = {};
   j.data.forEach(p => {
@@ -807,30 +826,37 @@ function groupDepartures(j, now) { // -> [{ dir, rows:[{ label, head, times }] }
     const route = inc["route:" + (p.relationships.route.data || {}).id], trip = inc["trip:" + (p.relationships.trip.data || {}).id];
     if (!route || !trip) return;
     const d = p.attributes.direction_id, names = route.attributes.direction_names || [];
-    const dir = names[d] || (d === 1 ? "Inbound" : "Outbound");
+    const dir = names[d] || (d === 1 ? "Inbound" : "Outbound"), mode = modeOf(route.id, route.attributes.type);
     const label = route.attributes.type === 3 ? (route.attributes.short_name || route.attributes.long_name) : route.attributes.long_name;
-    const key = dir + "|" + route.id + "|" + trip.attributes.headsign;
-    (groups[key] = groups[key] || { dir, d, label, head:trip.attributes.headsign, times:[] }).times.push(ms);
+    const key = mode.name + "|" + dir + "|" + route.id + "|" + trip.attributes.headsign;
+    (groups[key] = groups[key] || { mode, dir, d, label, head:trip.attributes.headsign, times:[] }).times.push(ms);
   });
-  const byDir = {};
-  Object.values(groups).forEach(g => { g.times.sort((a, b) => a - b); (byDir[g.dir] = byDir[g.dir] || { dir:g.dir, d:g.d, rows:[] }).rows.push(g); });
-  return Object.values(byDir).sort((a, b) => dirRank(a.dir) - dirRank(b.dir) || a.d - b.d)
-    .map(s => ({ dir:s.dir, rows:s.rows.sort((a, b) => a.times[0] - b.times[0]).slice(0, 4) }));
+  const byMode = {};
+  Object.values(groups).forEach(g => {
+    g.times.sort((a, b) => a - b);
+    const m = (byMode[g.mode.name] = byMode[g.mode.name] || { mode:g.mode.name, color:g.mode.color, rank:g.mode.rank, dirs:{} });
+    (m.dirs[g.dir] = m.dirs[g.dir] || { dir:g.dir, d:g.d, rows:[] }).rows.push(g);
+  });
+  return Object.values(byMode).sort((a, b) => a.rank - b.rank).map(m => ({ mode:m.mode, color:m.color,
+    dirs:Object.values(m.dirs).sort((a, b) => dirRank(a.dir) - dirRank(b.dir) || a.d - b.d)
+      .map(x => ({ dir:x.dir, rows:x.rows.sort((a, b) => a.times[0] - b.times[0]).slice(0, 4) })) }));
 }
 async function loadNext(stopId, el) {
   try {
     const j = await mbta("/predictions?filter[stop]=" + encodeURIComponent(stopId) + "&include=route,trip&page[limit]=100");
-    const secs = groupDepartures(j, Date.now());
-    el.innerHTML = secs.length
-      ? '<div class="h">Next departures (live)</div>' + secs.map(s => `<div class="dir">${esc(s.dir)}</div>` +
-          s.rows.map(g => `<div class="nl"><span>${esc(g.label)} to ${esc(g.head)}</span><span class="t">${g.times.slice(0, 2).map(mins).join(", ")}</span></div>`).join("")).join("")
+    const modes = groupDepartures(j, Date.now());
+    el.innerHTML = modes.length
+      ? '<div class="h">Next departures (live)</div>' + modes.map(m => `<div class="mode"><i style="background:${m.color}"></i>${esc(m.mode)}</div>` +
+          m.dirs.map(s => `<div class="dir">${esc(s.dir)}</div>` + s.rows.map(g => {
+            const text = g.label === m.mode ? "To " + g.head : g.label + " to " + g.head; /* the mode heading already names single-line modes */
+            return `<div class="nl"><span>${esc(text)}</span><span class="t">${g.times.slice(0, 2).map(mins).join(", ")}</span></div>`; }).join("")).join("")).join("")
       : '<div class="h">No upcoming departures reported right now.</div>';
   } catch (e) { el.textContent = "Live departures unavailable."; }
 }
 const routeCache = {};
 function stopRoutes(id) { // routes serving a stop, cached
-  return routeCache[id] || (routeCache[id] = mbta("/routes?filter[stop]=" + encodeURIComponent(id) + "&fields[route]=short_name,long_name")
-    .then(r => r.data.map(x => x.attributes)).catch(() => []));
+  return routeCache[id] || (routeCache[id] = mbta("/routes?filter[stop]=" + encodeURIComponent(id) + "&fields[route]=short_name,long_name,type")
+    .then(r => r.data.map(x => Object.assign({ id:x.id }, x.attributes))).catch(() => []));
 }
 async function fillMemberPopup(p, root) { // add the routes serving the nearest bus stop and ferry stop
   const n = nearest[p.org_id] || {}, sub = t => `<br><span style="color:#6b7684">${t}</span>`;
@@ -843,8 +869,12 @@ async function fillMemberPopup(p, root) { // add the routes serving the nearest 
     if (names.length && root.querySelector(".nferry")) root.querySelector(".nferry").innerHTML = esc(n.ferry.name) + sub(names.map(esc).join(", "));
   }
 }
+async function fillStationModes(p, root) { // rapid transit and commuter rail stations: list every mode that serves the stop
+  const r = await stopRoutes(p.id), el = root && root.querySelector(".eb");
+  if (el && r.length) el.innerHTML = modeBadges(r);
+}
 async function fillStopRoutes(p, root) { // bus stop / ferry stop popups: name the lines
-  const el = root && root.querySelector(".rts"); if (!el) return;
+  const el = root && root.querySelector(".rts"); if (!el) { fillStationModes(p, root); return; }
   const r = await stopRoutes(p.id), names = r.map(x => p.lines === "|Bus|" ? (x.short_name || x.long_name) : x.long_name);
   if (names.length && root.querySelector(".rts")) root.querySelector(".rts").textContent = (p.lines === "|Bus|" ? "Routes " : "") + names.slice(0, 10).join(", ") + (names.length > 10 ? "…" : "");
 }
