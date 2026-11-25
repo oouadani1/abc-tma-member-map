@@ -1,1 +1,1 @@
-window.DATA_UPDATED = "2026-11-24";
+window.DATA_UPDATED = "2026-11-25";
