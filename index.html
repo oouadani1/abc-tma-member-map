@@ -70,6 +70,14 @@
   .stat.one span { font-size:13px; color:var(--ink); }
   .stat .lab { display:block; color:var(--muted); font-size:11px; }
   .info { width:20px; height:20px; padding:0; border-radius:50%; font:italic 600 12px Georgia, serif; line-height:18px; margin-left:6px; vertical-align:middle; color:var(--muted); }
+  #search { display:flex; gap:6px; margin:0 0 4px; }
+  #search input { flex:1; min-width:0; font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); }
+  #results { margin:0 0 10px; border:1px solid var(--line); border-radius:8px; background:#fff; overflow:hidden; }
+  #results button { display:block; width:100%; text-align:left; border:0; border-radius:0; border-top:1px solid var(--line); background:#fff; padding:6px 8px; font-size:12px; }
+  #results button:first-child { border-top:0; }
+  #results button:hover { background:#f4f6f8; }
+  #results .rs { display:block; color:var(--muted); font-size:11px; }
+  #results .none { padding:6px 8px; font-size:12px; color:var(--muted); }
   #gloss { border:1px solid var(--line); border-radius:8px; background:#fff; padding:8px 10px; margin:0 0 10px; font-size:12px; }
   #gloss table { border-collapse:collapse; width:100%; margin:2px 0 6px; }
   #gloss td { padding:1px 0; } #gloss td:last-child { text-align:right; color:var(--muted); }
@@ -87,7 +95,9 @@
 <body>
 <div id="map"></div>
 <div id="panel">
-  <h1>ABC TMA Member Map <button class="info" id="infoBtn" type="button" title="Glossary and conversions">i</button></h1>
+  <form id="search" role="search"><input id="q" type="search" placeholder="Search an address or organization" aria-label="Search an address or organization"><button type="submit">Search</button></form>
+  <div id="results" hidden></div>
+  <h1 style="margin-top:10px">ABC TMA Member Map <button class="info" id="infoBtn" type="button" title="Glossary and conversions">i</button></h1>
   <div class="sub">TMA member locations and their transit access. Click a member for its walk or bike network; zoom in to see bus stops.</div>
 
   <div id="gloss" hidden>
@@ -119,6 +129,7 @@
     <p><b>Bluebikes:</b> Bluebikes GBFS feeds. Station names and docks from station_information; bikes and open docks from station_status, live.</p>
     <p><b>Bike lanes, shared-use paths, walking trails:</b> MAPC AllTrails map service (existing facilities).</p>
     <p><b>Walk and bike networks:</b> OpenStreetMap street data (Geofabrik Massachusetts extract)<span id="gNet"></span>.</p>
+    <p><b>Address search:</b> Nominatim (OpenStreetMap), searched when you press Search.</p>
     <p><b>Basemap:</b> CARTO Positron and Dark Matter, &copy; OpenStreetMap contributors. Map software: MapLibre GL JS.</p>
   </div>
 
@@ -906,6 +917,48 @@ map.on("click", e => {
 CLICKABLE.forEach(id => {
   map.on("mouseenter", id, () => map.getCanvas().style.cursor = "pointer");
   map.on("mouseleave", id, () => map.getCanvas().style.cursor = "");
+});
+
+/* search: organizations match as you type; addresses use Nominatim (OpenStreetMap) when you press Search */
+let pin = null;
+function clearResults() { $("results").hidden = true; $("results").innerHTML = ""; }
+function goTo(lng, lat, html) {
+  if (pin) pin.remove();
+  pin = new maplibregl.Marker({ color:"#1b2430" }).setLngLat([lng, lat]).addTo(map);
+  map.flyTo({ center:[lng, lat], zoom:Math.max(map.getZoom(), 16) });
+  if (html) popup.setLngLat([lng, lat]).setHTML(html).addTo(map);
+}
+function showResults(items, msg) {
+  const box = $("results");
+  box.innerHTML = items.length ? "" : `<div class="none">${esc(msg || "No matches.")}</div>`;
+  items.forEach(it => {
+    const b = document.createElement("button"); b.type = "button";
+    b.innerHTML = esc(it.title) + (it.sub ? `<span class="rs">${esc(it.sub)}</span>` : "");
+    b.onclick = () => { it.go(); box.hidden = true; };
+    box.appendChild(b);
+  });
+  box.hidden = false;
+}
+function memberMatches(q) {
+  const t = q.toLowerCase();
+  return t.length < 2 ? [] : members.features.filter(f => (f.properties.name + " " + f.properties.address).toLowerCase().indexOf(t) >= 0).slice(0, 5).map(f => ({
+    title:f.properties.name, sub:f.properties.address + ", " + f.properties.city + " (organization)",
+    go:() => { const c = f.geometry.coordinates; goTo(c[0], c[1], memberHTML(f.properties)); selectMember(f); fillMemberPopup(f.properties, popup.getElement()); } }));
+}
+$("q").addEventListener("input", () => { const m = memberMatches($("q").value.trim()); if (m.length) showResults(m); else clearResults(); });
+$("q").addEventListener("keydown", e => { if (e.key === "Escape") { $("q").value = ""; clearResults(); if (pin) { pin.remove(); pin = null; } } });
+$("search").addEventListener("submit", async e => {
+  e.preventDefault();
+  const q = $("q").value.trim(); if (!q) return;
+  const local = memberMatches(q);
+  showResults(local.concat([{ title:"Searching addresses…", go:() => {} }]));
+  try {
+    const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=us&addressdetails=0&viewbox=-71.9,42.7,-70.6,42.0&q=" + encodeURIComponent(q);
+    const r = await (await fetch(url)).json();
+    const found = r.map(x => ({ title:x.display_name.split(",").slice(0, 2).join(",").trim(), sub:x.display_name.split(",").slice(2).join(",").trim(),
+      go:() => goTo(+x.lon, +x.lat, `<div class="pop"><h3>${esc(x.display_name.split(",")[0])}</h3><div class="addr">${esc(x.display_name)}</div></div>`) }));
+    showResults(local.concat(found), "No matches. Try adding the city, such as “1 Beacon St, Boston”.");
+  } catch (err) { showResults(local, "Address search is unavailable right now."); }
 });
 
 /* sidebar */
