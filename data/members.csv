@@ -1,63 +1,63 @@
-org_id,name,address,city,lat,lng,sector,tma,sqft,sqft_tier
-recLnMTpccVrytqAJ,One Beacon St,1 Beacon Street,Boston,42.358163,-71.060407,Commercial Real Estate,A Better City TMA,1017998,500000-2000000 sq ft
-recUsjFiXpa4cNWVX,120 Brookline Ave,120 Brookline Ave,Boston,42.345481,-71.100209,Commercial Real Estate,A Better City TMA,22878,< 100000 sq ft
-recIM8MiWs8iZjYtJ,Boston Medical Center – Brighton,736 Cambridge Street,Boston,42.349962,-71.147461,Employer,Allston-Brighton TMA,,
-recBsP07CcPsWwW87,Waterstone at the Circle,385 Chestnut Hill Avenue,Boston,42.335674,-71.150633,Residential,Allston-Brighton TMA,123932,
-recJWwYKMzPDJYDgd,Van Ness,1325 Boylston Street,Boston,42.344375,-71.098762,Mixed-Use,A Better City TMA,561996,500000-2000000 sq ft
-recpzQQ7xTSW0uLTQ,Avalon Brighton,139 Washington Street,Boston,42.345493,-71.145539,Residential,Allston-Brighton TMA,,
-recmFpYNKWgLJkRsj,Liberty Mutual Insurance,175 Berkeley Street,Boston,42.349605,-71.072197,Employer,A Better City TMA,,
-recqU9fRrC2h13VO2,Fenway Triangle,180 Brookline Avenue,Boston,42.344087,-71.101718,Mixed-Use,A Better City TMA,1000000,
-recVgq5JR1vDYMc7I,222 Berkeley/500 Boylston,222 Berkeley Street / 500 Boylston Street,Boston,42.351023,-71.073039,Commercial Real Estate,A Better City TMA,862356,500000-2000000 sq ft
-recUPSZjKGKypWfji,The Brookliner,5 Washington Street,Brookline,42.331932,-71.114787,Residential,Allston-Brighton TMA,,
-recNKnf0IxUMjIX4s,745 Atlantic Ave,745 Atlantic Ave,Boston,42.350389,-71.056666,Mixed-Use,Allston-Brighton TMA,,
-recozf4EVtiffppJU,200 Clarendon St,200 Clarendon Street,Boston,42.349893,-71.074892,Commercial Real Estate,A Better City TMA,1700914,500000-2000000 sq ft
-recn1mL2rxRzJoBev,50 Post Office Sq,50 Post Office Square,Boston,42.357269,-71.056030,Commercial Real Estate,A Better City TMA,782304,500000-2000000 sq ft
-recLkeo9ESMT9zlPE,100 Summer St,100 Summer Street,Boston,42.353578,-71.057661,Commercial Real Estate,A Better City TMA,1344121,100000-499999 sq ft
-rec4iK9fSKAVQJPwI,Verra,50 Western Avenue,Boston,42.363763,-71.122242,Residential,Allston-Brighton TMA,280722,
-recQCY683ks93U6uV,126 Brookline Ave,126 Brookline Ave,Boston,42.345291,-71.100419,Commercial Real Estate,A Better City TMA,61495,< 100000 sq ft
-reckGd2Uswa9OirpY,University of Massachusetts Boston,100 William T Morrissey Boulevard,Boston,42.314139,-71.046835,Employer,A Better City TMA,,
-recobsFVozt0waMQV,Continuum,219 Western Avenue,Boston,42.363432,-71.133867,Residential,Allston-Brighton TMA,,
-recTqc0jxCeQjo5j4,75 Arlington St,75 Arlington Street,Boston,42.350929,-71.070314,Commercial Real Estate,A Better City TMA,256247,100000-499999 sq ft
-rech1bV1hEuobld0N,Tufts Medical Center,800 Washington Street,Boston,42.350239,-71.063325,Employer,A Better City TMA,,
-recnJRJeAmV6YtmCY,Millennium Place,580 Washington Street,Boston,42.353466,-71.062369,Residential,A Better City TMA,,
-recXw1YvOb25PjhWn,One Post Office Sq,One Post Office Square,Boston,42.357516,-71.056398,Commercial Real Estate,A Better City TMA,957000,500000-2000000 sq ft
-recEF9AVoWqxuTRB4,225 Franklin St,225 Franklin Street,Boston,42.356268,-71.054359,Commercial Real Estate,A Better City TMA,762572,500000-2000000 sq ft
-recvVtrbVtv3QZebl,28 State St,28 State Street,Boston,42.358944,-71.057466,Commercial Real Estate,A Better City TMA,570057,500000-2000000 sq ft
-recCNg5hzyXbC73vx,Boston Landing,20 Guest Street,Boston,42.357345,-71.147306,Mixed-Use,Allston-Brighton TMA,2500000,500000-2000000 sq ft
-recZHY3lNAZhbwuP1,Fidelity Investments,245 Summer Street,Boston,42.351462,-71.053065,Employer,A Better City TMA,,
-recdu6yMm4zLSuoZX,"First Church of Christ, Scientist",250 Massachusetts Avenue,Boston,42.345655,-71.086864,Mixed-Use,A Better City TMA,,500000-2000000 sq ft
-recGY1lnl4jptF7fe,The Overlook at St. Gabriel's,175 Washington Street,Boston,42.346294,-71.146470,Residential,Allston-Brighton TMA,,
-rechVZd9jMALUg3SX,197 Clarendon,197 Clarendon Street,Boston,42.349006,-71.074298,Commercial Real Estate,A Better City TMA,862356,100000-499999 sq ft
-recRU41CvKNrpgh6N,Prudential Center,800 Boylston Street,Boston,42.348750,-71.082132,Mixed-Use,A Better City TMA,3200000,
-recmCCQPPrBGVOX6x,777 Boylston St,777 Boylston Street,Boston,42.349088,-71.081391,Commercial Real Estate,A Better City TMA,30804,< 100000 sq ft
-recqWKQ1714E6TRMo,Alder at Allston Yards,301 Guest Street,Boston,42.356069,-71.139446,Residential,Allston-Brighton TMA,,
-recGc12rr8Vou4uN3,Harvard Real Estate,1350 Massachusetts Avenue,Cambridge,42.373182,-71.118337,Commercial Real Estate,Allston-Brighton TMA,,500000-2000000 sq ft
-recgngtAk0YMzQtvy,The Arlington,100 Arlington Street,Boston,42.350108,-71.069802,Residential,A Better City TMA,,100000-499999 sq ft
-recTacKrICi82apTj,HNTB Corporation,"31 Saint James Avenue, Suite 300",Boston,42.350906,-71.071068,Employer,A Better City TMA,,
-recLvdIFr8nXG40pm,Charles River Plaza,185 Cambridge Street,Boston,42.361252,-71.066268,Commercial Real Estate,A Better City TMA,640000,500000-2000000 sq ft
-recCmStu9WDzCcXPJ,200 Berkeley St,200 Berkeley Street,Boston,42.350267,-71.072674,Commercial Real Estate,A Better City TMA,762572,500000-2000000 sq ft
-recYSyJ8THAjmnq0d,321 Harrison Ave,321 Harrison Ave,Boston,42.345514,-71.063681,Commercial Real Estate,A Better City TMA,943605,100000-499999 sq ft
-rec2sRBSZ0Kf8JvZk,DoubleTree Suites by Hilton Hotel Boston - Cambridge,400 Soldiers Field Road,Boston,42.359883,-71.118349,Mixed-Use,Allston-Brighton TMA,,
-recLhGAR5HYWChEbA,One Lincoln St,1 Lincoln Street,Boston,42.353290,-71.057916,Commercial Real Estate,A Better City TMA,1100000,500000-2000000 sq ft
-recgUGCqa515vBY5f,10 St James Ave,10 Saint James Avenue,Boston,42.350937,-71.070519,Commercial Real Estate,A Better City TMA,565793,500000-2000000 sq ft
-recTNpgQfxo614XF7,1249-1255 Boylston,1249-1255 Boylston Street,Boston,42.345264,-71.095426,Commercial Real Estate,A Better City TMA,912214,< 100000 sq ft
-rec4c1ZuzLtBYTfCO,1330 Boylston St,1330 Boylston Street,Boston,42.344337,-71.098464,Commercial Real Estate,A Better City TMA,485000,100000-499999 sq ft
-recjiCKxBNCigVZY0,131 Dartmouth St,131 Dartmouth Street,Boston,42.346742,-71.075599,Commercial Real Estate,A Better City TMA,371016,100000-499999 sq ft
-recgMN5hKtcjUwikU,Ink Block,300 Harrison Avenue,Boston,42.346268,-71.063212,Residential,A Better City TMA,,
-reckxPPe8h4KraVgm,Brighton Landing Condominium,"1, 10, 15 Guest Street",Boston,42.357415,-71.147834,Residential,Allston-Brighton TMA,,100000-499999 sq ft
-recrucYuogYbrOoFO,350 Boylston St,350 Boylston Street,Boston,42.351779,-71.070792,Commercial Real Estate,A Better City TMA,221230,100000-499999 sq ft
-recsck4vLhcicBcAo,100 Federal St,100 Federal Street,Boston,42.354718,-71.056229,Commercial Real Estate,A Better City TMA,1247849,500000-2000000 sq ft
-reckmhFigHjssPM9F,125 Summer St,125 Summer Street,Boston,42.353173,-71.057092,Commercial Real Estate,A Better City TMA,661815,100000-499999 sq ft
-recVBcu6QmDyrRgOA,132 Brookline Ave,132 Brookline Avenue,Boston,42.345143,-71.100584,Commercial Real Estate,A Better City TMA,25554,< 100000 sq ft
-recYAAIUHnYldhPpI,The Hub on Causeway,100 Causeway Street,Boston,42.365234,-71.061804,Mixed-Use,A Better City TMA,1685000,500000-2000000 sq ft
-recmyxrqTdNCqH4Zr,Franklin Cummings Tech,1003 Harrison Avenue,Boston,42.331767,-71.079921,Employer,A Better City TMA,,
-recuKxs3Z4QdqjDCr,226 Causeway St,226 Causeway Street,Boston,42.366617,-71.059179,Mixed-Use,A Better City TMA,2059997,100000-499999 sq ft
-rec4eiTNgtgtAQHrM,140 Clarendon St,140 Clarendon Street,Boston,42.348566,-71.074256,Mixed-Use,A Better City TMA,155000,100000-499999 sq ft
-rec1s9KjpSCqFTAJ0,Massachusetts General Hospital,55 Fruit Street,Boston,42.362487,-71.069835,Employer,A Better City TMA,380000,
-rec9rtK3Qf4XjG4qC,Boston Medical Center,1 Boston Medical Center Place,Boston,42.334695,-71.075401,Employer,A Better City TMA,,
-recd9hhnSTNzqdrSD,Rowes Wharf,70 Rowes Wharf,Boston,42.357122,-71.050171,Commercial Real Estate,A Better City TMA,365000,100000-499999 sq ft
-recO3bqoTn4m2d2lb,Boston University Charles River Campus,1019 Commonwealth Avenue,Boston,42.351964,-71.121535,Employer,Allston-Brighton TMA,,
-recHDMZ4CVkdQ8oJT,Hood Park,50 Hood Park Drive,Boston,42.380158,-71.072623,Mixed-Use,A Better City TMA,1800000,500000-2000000 sq ft
-recupGz7W1W9nrnqb,Clarendon Back Bay,400 Stuart Street,Boston,42.348946,-71.074140,Residential,A Better City TMA,,100000-499999 sq ft
-recQOZ2penhPp7vIb,Atlantic Wharf,280 Congress Street,Boston,42.352875,-71.052676,Commercial Real Estate,A Better City TMA,1790000,500000-2000000 sq ft
-recKgcnmzYDQqSZ9G,The Winthrop Center,115 Federal Street,Boston,42.354820,-71.056399,Commercial Real Estate,A Better City TMA,1860519,500000-2000000 sq ft
+org_id,name,address,city,lat,lng,sector,tma
+recgUGCqa515vBY5f,10 St James Ave,10 Saint James Avenue,Boston,42.350937,-71.070519,Commercial Real Estate,A Better City TMA
+recsck4vLhcicBcAo,100 Federal St,100 Federal Street,Boston,42.354718,-71.056229,Commercial Real Estate,A Better City TMA
+recLkeo9ESMT9zlPE,100 Summer St,100 Summer Street,Boston,42.353578,-71.057661,Commercial Real Estate,A Better City TMA
+recUsjFiXpa4cNWVX,120 Brookline Ave,120 Brookline Ave,Boston,42.345481,-71.100209,Commercial Real Estate,A Better City TMA
+recTNpgQfxo614XF7,1249-1255 Boylston,1249-1255 Boylston Street,Boston,42.345264,-71.095426,Commercial Real Estate,A Better City TMA
+reckmhFigHjssPM9F,125 Summer St,125 Summer Street,Boston,42.353173,-71.057092,Commercial Real Estate,A Better City TMA
+recQCY683ks93U6uV,126 Brookline Ave,126 Brookline Ave,Boston,42.345291,-71.100419,Commercial Real Estate,A Better City TMA
+recjiCKxBNCigVZY0,131 Dartmouth St,131 Dartmouth Street,Boston,42.346742,-71.075599,Commercial Real Estate,A Better City TMA
+recVBcu6QmDyrRgOA,132 Brookline Ave,132 Brookline Avenue,Boston,42.345143,-71.100584,Commercial Real Estate,A Better City TMA
+rec4c1ZuzLtBYTfCO,1330 Boylston St,1330 Boylston Street,Boston,42.344337,-71.098464,Commercial Real Estate,A Better City TMA
+rec4eiTNgtgtAQHrM,140 Clarendon St,140 Clarendon Street,Boston,42.348566,-71.074256,Mixed-Use,A Better City TMA
+rechVZd9jMALUg3SX,197 Clarendon,197 Clarendon Street,Boston,42.349006,-71.074298,Commercial Real Estate,A Better City TMA
+recCmStu9WDzCcXPJ,200 Berkeley St,200 Berkeley Street,Boston,42.350267,-71.072674,Commercial Real Estate,A Better City TMA
+recozf4EVtiffppJU,200 Clarendon St,200 Clarendon Street,Boston,42.349893,-71.074892,Commercial Real Estate,A Better City TMA
+recVgq5JR1vDYMc7I,222 Berkeley/500 Boylston,222 Berkeley Street / 500 Boylston Street,Boston,42.351023,-71.073039,Commercial Real Estate,A Better City TMA
+recEF9AVoWqxuTRB4,225 Franklin St,225 Franklin Street,Boston,42.356268,-71.054359,Commercial Real Estate,A Better City TMA
+recuKxs3Z4QdqjDCr,226 Causeway St,226 Causeway Street,Boston,42.366617,-71.059179,Mixed-Use,A Better City TMA
+recvVtrbVtv3QZebl,28 State St,28 State Street,Boston,42.358944,-71.057466,Commercial Real Estate,A Better City TMA
+recYSyJ8THAjmnq0d,321 Harrison Ave,321 Harrison Ave,Boston,42.345514,-71.063681,Commercial Real Estate,A Better City TMA
+recrucYuogYbrOoFO,350 Boylston St,350 Boylston Street,Boston,42.351779,-71.070792,Commercial Real Estate,A Better City TMA
+recn1mL2rxRzJoBev,50 Post Office Sq,50 Post Office Square,Boston,42.357269,-71.056030,Commercial Real Estate,A Better City TMA
+recNKnf0IxUMjIX4s,745 Atlantic Ave,745 Atlantic Ave,Boston,42.350389,-71.056666,Mixed-Use,Allston-Brighton TMA
+recTqc0jxCeQjo5j4,75 Arlington St,75 Arlington Street,Boston,42.350929,-71.070314,Commercial Real Estate,A Better City TMA
+recmCCQPPrBGVOX6x,777 Boylston St,777 Boylston Street,Boston,42.349088,-71.081391,Commercial Real Estate,A Better City TMA
+recqWKQ1714E6TRMo,Alder at Allston Yards,301 Guest Street,Boston,42.356069,-71.139446,Residential,Allston-Brighton TMA
+recQOZ2penhPp7vIb,Atlantic Wharf,280 Congress Street,Boston,42.352875,-71.052676,Commercial Real Estate,A Better City TMA
+recpzQQ7xTSW0uLTQ,Avalon Brighton,139 Washington Street,Boston,42.345493,-71.145539,Residential,Allston-Brighton TMA
+recCNg5hzyXbC73vx,Boston Landing,20 Guest Street,Boston,42.357345,-71.147306,Mixed-Use,Allston-Brighton TMA
+rec9rtK3Qf4XjG4qC,Boston Medical Center,1 Boston Medical Center Place,Boston,42.334695,-71.075401,Employer,A Better City TMA
+recIM8MiWs8iZjYtJ,Boston Medical Center – Brighton,736 Cambridge Street,Boston,42.349962,-71.147461,Employer,Allston-Brighton TMA
+recO3bqoTn4m2d2lb,Boston University Charles River Campus,1019 Commonwealth Avenue,Boston,42.351964,-71.121535,Employer,Allston-Brighton TMA
+reckxPPe8h4KraVgm,Brighton Landing Condominium,"1, 10, 15 Guest Street",Boston,42.357415,-71.147834,Residential,Allston-Brighton TMA
+recLvdIFr8nXG40pm,Charles River Plaza,185 Cambridge Street,Boston,42.361252,-71.066268,Commercial Real Estate,A Better City TMA
+recupGz7W1W9nrnqb,Clarendon Back Bay,400 Stuart Street,Boston,42.348946,-71.074140,Residential,A Better City TMA
+recobsFVozt0waMQV,Continuum,219 Western Avenue,Boston,42.363432,-71.133867,Residential,Allston-Brighton TMA
+rec2sRBSZ0Kf8JvZk,DoubleTree Suites by Hilton Hotel Boston - Cambridge,400 Soldiers Field Road,Boston,42.359883,-71.118349,Mixed-Use,Allston-Brighton TMA
+recqU9fRrC2h13VO2,Fenway Triangle,180 Brookline Avenue,Boston,42.344087,-71.101718,Mixed-Use,A Better City TMA
+recZHY3lNAZhbwuP1,Fidelity Investments,245 Summer Street,Boston,42.351462,-71.053065,Employer,A Better City TMA
+recdu6yMm4zLSuoZX,"First Church of Christ, Scientist",250 Massachusetts Avenue,Boston,42.345655,-71.086864,Mixed-Use,A Better City TMA
+recmyxrqTdNCqH4Zr,Franklin Cummings Tech,1003 Harrison Avenue,Boston,42.331767,-71.079921,Employer,A Better City TMA
+recGc12rr8Vou4uN3,Harvard Real Estate,1350 Massachusetts Avenue,Cambridge,42.373182,-71.118337,Commercial Real Estate,Allston-Brighton TMA
+recTacKrICi82apTj,HNTB Corporation,"31 Saint James Avenue, Suite 300",Boston,42.350906,-71.071068,Employer,A Better City TMA
+recHDMZ4CVkdQ8oJT,Hood Park,50 Hood Park Drive,Boston,42.380158,-71.072623,Mixed-Use,A Better City TMA
+recgMN5hKtcjUwikU,Ink Block,300 Harrison Avenue,Boston,42.346268,-71.063212,Residential,A Better City TMA
+recmFpYNKWgLJkRsj,Liberty Mutual Insurance,175 Berkeley Street,Boston,42.349605,-71.072197,Employer,A Better City TMA
+rec1s9KjpSCqFTAJ0,Massachusetts General Hospital,55 Fruit Street,Boston,42.362487,-71.069835,Employer,A Better City TMA
+recnJRJeAmV6YtmCY,Millennium Place,580 Washington Street,Boston,42.353466,-71.062369,Residential,A Better City TMA
+recLnMTpccVrytqAJ,One Beacon St,1 Beacon Street,Boston,42.358163,-71.060407,Commercial Real Estate,A Better City TMA
+recLhGAR5HYWChEbA,One Lincoln St,1 Lincoln Street,Boston,42.353290,-71.057916,Commercial Real Estate,A Better City TMA
+recXw1YvOb25PjhWn,One Post Office Sq,One Post Office Square,Boston,42.357516,-71.056398,Commercial Real Estate,A Better City TMA
+recRU41CvKNrpgh6N,Prudential Center,800 Boylston Street,Boston,42.348750,-71.082132,Mixed-Use,A Better City TMA
+recd9hhnSTNzqdrSD,Rowes Wharf,70 Rowes Wharf,Boston,42.357122,-71.050171,Commercial Real Estate,A Better City TMA
+recgngtAk0YMzQtvy,The Arlington,100 Arlington Street,Boston,42.350108,-71.069802,Residential,A Better City TMA
+recUPSZjKGKypWfji,The Brookliner,5 Washington Street,Brookline,42.331932,-71.114787,Residential,Allston-Brighton TMA
+recYAAIUHnYldhPpI,The Hub on Causeway,100 Causeway Street,Boston,42.365234,-71.061804,Mixed-Use,A Better City TMA
+recGY1lnl4jptF7fe,The Overlook at St. Gabriel's,175 Washington Street,Boston,42.346294,-71.146470,Residential,Allston-Brighton TMA
+recKgcnmzYDQqSZ9G,The Winthrop Center,115 Federal Street,Boston,42.354820,-71.056399,Commercial Real Estate,A Better City TMA
+rech1bV1hEuobld0N,Tufts Medical Center,800 Washington Street,Boston,42.350239,-71.063325,Employer,A Better City TMA
+reckGd2Uswa9OirpY,University of Massachusetts Boston,100 William T Morrissey Boulevard,Boston,42.314139,-71.046835,Employer,A Better City TMA
+recJWwYKMzPDJYDgd,Van Ness,1325 Boylston Street,Boston,42.344375,-71.098762,Mixed-Use,A Better City TMA
+rec4iK9fSKAVQJPwI,Verra,50 Western Avenue,Boston,42.363763,-71.122242,Residential,Allston-Brighton TMA
+recBsP07CcPsWwW87,Waterstone at the Circle,385 Chestnut Hill Avenue,Boston,42.335674,-71.150633,Residential,Allston-Brighton TMA
